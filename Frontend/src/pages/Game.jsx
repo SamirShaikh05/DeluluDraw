@@ -35,7 +35,7 @@ export function Game({
         <button className="mr-2.5 justify-self-end bg-[#111827] px-1.75 py-1.75 text-[10px] text-white sm:px-2.5 sm:py-2 sm:text-xs" type="button">settings</button>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-0 md:grid-cols-[180px_minmax(0,1fr)_266px]">
+      <div className="grid grid-cols-1 items-start gap-0 md:grid-cols-[220px_minmax(0,1fr)_266px]">
         <PlayerList
           players={players}
           hostId={room.hostId}

@@ -11,6 +11,20 @@ export function useGameState(socketRef) {
     const socket = socketRef.current;
     if (!socket) return undefined;
 
+    // add this handler function with the others at the top of the useEffect
+    const onKickVote = ({ voterName, targetName, count, required }) => {
+      setMessages((current) => [
+        ...current.slice(-90),
+        {
+          id: crypto.randomUUID(),
+          type: "kick-vote",
+          playerName: voterName,
+          targetName,
+          count,
+          required,
+        },
+      ]);
+    };
     const onRoomJoined = ({ roomId, hostId }) => {
       setRoom((current) => ({ ...(current || {}), roomId, hostId }));
       setScreen("lobby");
@@ -42,12 +56,13 @@ export function useGameState(socketRef) {
       setScreen("home");
       setNotice(message || "You were removed from the match.");
     };
-
+    
     socket.on("room_joined", onRoomJoined);
     socket.on("room_state", onRoomState);
     socket.on("message", onMessage);
     socket.on("choose_word", onChooseWord);
     socket.on("round_start", clearWordOptions);
+    socket.on("kick_vote", onKickVote);
     socket.on("game_over", clearWordOptions);
     socket.on("error", onError);
     socket.on("kicked_from_room", onKickedFromRoom);
@@ -58,6 +73,7 @@ export function useGameState(socketRef) {
       socket.off("message", onMessage);
       socket.off("choose_word", onChooseWord);
       socket.off("round_start", clearWordOptions);
+      socket.off("kick_vote", onKickVote);
       socket.off("game_over", clearWordOptions);
       socket.off("error", onError);
       socket.off("kicked_from_room", onKickedFromRoom);

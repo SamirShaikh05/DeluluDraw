@@ -17,11 +17,7 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
   }
 
   return (
-    <aside className="grid h-90 min-h-90 grid-rows-[104px_minmax(0,1fr)_44px] border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:h-[calc(min(62vh,560px)+58px)] md:min-h-[488px] md:border-t-0">
-      <div className="grid content-center gap-1.5 bg-[linear-gradient(90deg,rgba(17,24,39,0.82),rgba(239,68,68,0.34)),url('./assets/hero.png')] bg-cover bg-center px-[14px] py-[14px] text-white">
-        <strong className="text-[17px]">Ride Smart, Save More</strong>
-        <span className="text-xs font-extrabold">Sponsored sketch fuel</span>
-      </div>
+    <aside className="grid h-90 min-h-90 grid-rows-[minmax(0,1fr)_44px] border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:h-[calc(min(62vh,560px)+58px)] md:min-h-[488px] md:border-t-0">
       <div className="chat-stream overflow-y-auto bg-[#f6f6f6]" ref={scrollRef}>
         {messages.map((message) => (
           <MessageItem message={message} key={message.id} />

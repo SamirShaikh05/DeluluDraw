@@ -71,6 +71,12 @@ function registerRoomHandlers(io, socket) {
     room.kickVotes[targetId] = votes;
 
     const requiredVotes = Math.floor(room.players.length / 2) + 1;
+    io.to(room.id).emit("kick_vote", {
+      voterName: voter.name,
+      targetName: target.name,
+      count: votes.size,
+      required: requiredVotes,
+    });
     if (votes.size >= requiredVotes) {
       removePlayerFromRoom(io, room, target.id, {
         reason: `${target.name} was kicked by majority vote.`,
