@@ -13,6 +13,8 @@ export function Game({
   isDrawer,
   me,
   messages,
+  myId,
+  onKickVote,
   players,
   room,
   sendGuess,
@@ -21,6 +23,7 @@ export function Game({
 }) {
   const [color, setColor] = useState("#111827");
   const [size, setSize] = useState(7);
+  const showKickVotes = !room.isPrivate && players.length >= 3;
 
   return (
     <section className="mx-auto mb-7 mt-3 w-[min(100%-24px,1170px)]">
@@ -33,7 +36,15 @@ export function Game({
       </div>
 
       <div className="grid grid-cols-1 items-start gap-0 md:grid-cols-[180px_minmax(0,1fr)_266px]">
-        <PlayerList players={players} hostId={room.hostId} drawerId={game?.drawerId} />
+        <PlayerList
+          players={players}
+          hostId={room.hostId}
+          drawerId={game?.drawerId}
+          myId={myId}
+          kickVotes={room.kickVotes}
+          onKickVote={onKickVote}
+          showKickVotes={showKickVotes}
+        />
         <div className="relative min-w-0 border-b-[3px] border-[#0c3579] bg-white">
           <WordPicker chooseWord={chooseWord} game={game} isDrawer={isDrawer} players={players} wordOptions={wordOptions} />
           <CanvasBoard socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && game?.phase === "drawing"} color={color} size={size} />

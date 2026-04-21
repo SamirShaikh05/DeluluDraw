@@ -7,6 +7,7 @@ class Room {
     this.chat = [];
     this.settings = settings;
     this.game = null;
+    this.kickVotes = {};
   }
 
   addPlayer(player) {

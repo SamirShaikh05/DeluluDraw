@@ -43,6 +43,46 @@ function registerRoomHandlers(io, socket) {
     emitRoomState(io, room);
   });
 
+  socket.on(EVENTS.VOTE_KICK, ({ roomId, targetId } = {}) => {
+    const id = sanitizeText(roomId).toUpperCase();
+    const room = rooms[id];
+    if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
+    if (room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Kick voting is only available in public matches." });
+    if (room.players.length < 3) return socket.emit(EVENTS.ERROR, { message: "Kick voting needs at least 3 players." });
+    if (socket.id === targetId) return socket.emit(EVENTS.ERROR, { message: "You can't vote to kick yourself." });
+
+    const voter = room.players.find((player) => player.id === socket.id);
+    const target = room.players.find((player) => player.id === targetId);
+    if (!voter || !target) return socket.emit(EVENTS.ERROR, { message: "Player not found in this match." });
+
+    const votes = room.kickVotes[targetId] || new Set();
+    if (votes.has(socket.id)) {
+      votes.delete(socket.id);
+      if (votes.size === 0) {
+        delete room.kickVotes[targetId];
+      } else {
+        room.kickVotes[targetId] = votes;
+      }
+      emitRoomState(io, room);
+      return;
+    }
+
+    votes.add(socket.id);
+    room.kickVotes[targetId] = votes;
+
+    const requiredVotes = Math.floor(room.players.length / 2) + 1;
+    if (votes.size >= requiredVotes) {
+      removePlayerFromRoom(io, room, target.id, {
+        reason: `${target.name} was kicked by majority vote.`,
+        notice: "You were removed from the public match by majority vote.",
+        kicked: true,
+      });
+      return;
+    }
+
+    emitRoomState(io, room);
+  });
+
   socket.on(EVENTS.JOIN_ROOM, ({ roomId, playerName } = {}) => {
     const name = sanitizeName(playerName);
     const id = sanitizeText(roomId).toUpperCase();
@@ -52,12 +92,6 @@ function registerRoomHandlers(io, socket) {
     if (!room) return socket.emit(EVENTS.ERROR, { message: "That room does not exist." });
     if (room.players.length >= room.settings.maxPlayers) {
       return socket.emit(EVENTS.ERROR, { message: "That room is full." });
-    }
-    if (room.game && room.game.phase !== "game_over") {
-      if (!room.isPrivate) {
-        return socket.emit(EVENTS.ERROR, { message: "The public match is in progress. Try again shortly." });
-      }
-      return socket.emit(EVENTS.ERROR, { message: "That game is already running." });
     }
 
     const player = new Player(socket.id, name);
@@ -84,33 +118,66 @@ function registerRoomHandlers(io, socket) {
 
 function removePlayerFromRooms(io, socket) {
   for (const room of Object.values(rooms)) {
-    const wasDrawer = room.game && getDrawer(room)?.id === socket.id;
-    const player = room.removePlayer(socket.id);
-    if (!player) continue;
-
-    socket.leave(room.id);
-    addMessage(io, room, {
-      type: "system",
-      text: `${player.name} left the room.`,
+    removePlayerFromRoom(io, room, socket.id, {
+      reason: null,
+      notice: null,
+      kicked: false,
     });
+  }
+}
 
-    if (room.isEmpty()) {
-      clearTimers(room.game);
-      delete rooms[room.id];
-      continue;
-    }
+function removePlayerFromRoom(io, room, playerId, options = {}) {
+  const player = room.players.find((candidate) => candidate.id === playerId);
+  if (!player) return false;
 
-    if (!room.isPrivate && room.players.length < MIN_PLAYERS_TO_START) {
-      resetRoomToWaiting(io, room, "Not enough players. Waiting for more players.");
-      continue;
-    }
+  const wasDrawer = room.game && getDrawer(room)?.id === playerId;
+  room.removePlayer(playerId);
+  clearKickVotes(room, playerId);
 
-    if (wasDrawer && room.game?.phase === "drawing") {
-      endRound(io, room.id);
-    } else if (wasDrawer && room.game?.phase === "choosing") {
-      beginChoosing(io, room);
-    } else {
-      emitRoomState(io, room);
+  const playerSocket = io.sockets.sockets.get(playerId);
+  playerSocket?.leave(room.id);
+  if (options.kicked) {
+    playerSocket?.emit(EVENTS.KICKED_FROM_ROOM, { message: options.notice || "You were removed from the match." });
+  }
+
+  addMessage(io, room, {
+    type: "system",
+    text: options.reason || `${player.name} left the room.`,
+  });
+
+  if (room.isEmpty()) {
+    clearTimers(room.game);
+    delete rooms[room.id];
+    return true;
+  }
+
+  if (!room.isPrivate && room.players.length < 3) {
+    room.kickVotes = {};
+  }
+
+  if (!room.isPrivate && room.players.length < MIN_PLAYERS_TO_START) {
+    resetRoomToWaiting(io, room, "Not enough players. Waiting for more players.");
+    return true;
+  }
+
+  if (wasDrawer && room.game?.phase === "drawing") {
+    endRound(io, room.id);
+  } else if (wasDrawer && room.game?.phase === "choosing") {
+    beginChoosing(io, room);
+  } else {
+    emitRoomState(io, room);
+  }
+
+  return true;
+}
+
+function clearKickVotes(room, removedPlayerId) {
+  delete room.kickVotes[removedPlayerId];
+
+  for (const [targetId, voters] of Object.entries(room.kickVotes)) {
+    voters.delete(removedPlayerId);
+    if (voters.size === 0 || !room.players.some((player) => player.id === targetId)) {
+      delete room.kickVotes[targetId];
     }
   }
 }

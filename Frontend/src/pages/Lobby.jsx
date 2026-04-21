@@ -1,8 +1,9 @@
 import { PlayerList } from "../components/game/PlayerList";
 
-export function Lobby({ goHome, isHost, notice, players, room, startGame, updateRoomSettings }) {
+export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room, startGame, updateRoomSettings }) {
   const isPrivate = room.isPrivate;
   const waitingForPlayers = !isPrivate && players.length < 2;
+  const showKickVotes = !isPrivate && players.length >= 3;
 
   return (
     <section className="relative z-10 mx-auto my-14.5 grid w-[min(100%-20px,620px)] grid-cols-1 gap-4.5 md:w-[min(100%-28px,920px)] md:grid-cols-[minmax(0,1fr)_290px]">
@@ -47,7 +48,15 @@ export function Lobby({ goHome, isHost, notice, players, room, startGame, update
         )}
         {notice && <p className="mt-3 text-center font-extrabold text-[#fff5f5]">{notice}</p>}
       </div>
-      <PlayerList players={players} hostId={room.hostId} drawerId="" />
+      <PlayerList
+        players={players}
+        hostId={room.hostId}
+        drawerId=""
+        myId={myId}
+        kickVotes={room.kickVotes}
+        onKickVote={onKickVote}
+        showKickVotes={showKickVotes}
+      />
     </section>
   );
 }

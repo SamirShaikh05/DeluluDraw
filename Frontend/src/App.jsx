@@ -62,6 +62,10 @@ function App() {
     setWordOptions([]);
   }
 
+  function voteKick(targetId) {
+    socketRef.current?.emit("vote_kick", { roomId: room?.roomId, targetId });
+  }
+
   function sendGuess(text) {
     socketRef.current?.emit("guess", { roomId: room?.roomId, text });
   }
@@ -88,6 +92,8 @@ function App() {
           room={room}
           players={players}
           isHost={isHost}
+          myId={myId}
+          onKickVote={voteKick}
           startGame={startGame}
           updateRoomSettings={updateRoomSettings}
           notice={notice}
@@ -101,6 +107,8 @@ function App() {
           game={game}
           players={sortedPlayers}
           me={me}
+          myId={myId}
+          onKickVote={voteKick}
           drawer={drawer}
           isDrawer={isDrawer}
           messages={messages}

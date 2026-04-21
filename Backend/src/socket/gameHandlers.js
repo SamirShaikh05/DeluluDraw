@@ -73,9 +73,14 @@ function beginChoosing(io, room) {
   room.players.forEach((player) => {
     player.hasGuessed = false;
   });
-  game.resetForChoosing(pickWords(room.settings.wordOptionsCount), room.players.length, CHOOSE_TIME_MS);
+  const drawer = room.players[game.turn % room.players.length];
+  game.resetForChoosing(
+    pickWords(room.settings.wordOptionsCount),
+    room.players.length,
+    CHOOSE_TIME_MS,
+    drawer.id
+  );
 
-  const drawer = getDrawer(room);
   io.to(room.id).emit(EVENTS.CANVAS_CLEAR);
   addMessage(io, room, {
     type: "system",

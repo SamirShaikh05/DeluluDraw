@@ -1,10 +1,12 @@
 class Game {
   constructor(settings, playerCount) {
+    this.roundLimit = settings.rounds;
     this.phase = "choosing";
     this.round = 1;
     this.turn = 0;
-    this.totalTurns = Math.max(1, settings.rounds * playerCount);
+    this.totalTurns = Math.max(1, this.roundLimit * playerCount);
     this.drawerIndex = 0;
+    this.drawerId = "";
     this.currentWord = "";
     this.wordOptions = [];
     this.playersGuessed = [];
@@ -15,14 +17,16 @@ class Game {
     this.tickRef = null;
   }
 
-  resetForChoosing(wordOptions, playerCount, chooseTimeMs) {
+  resetForChoosing(wordOptions, playerCount, chooseTimeMs, drawerId) {
     this.phase = "choosing";
     this.currentWord = "";
     this.playersGuessed = [];
     this.revealedIndexes = [];
     this.wordOptions = wordOptions;
+    this.totalTurns = Math.max(this.turn + 1, this.roundLimit * playerCount);
     this.round = Math.floor(this.turn / Math.max(1, playerCount)) + 1;
     this.drawerIndex = this.turn % playerCount;
+    this.drawerId = drawerId;
     this.startedAt = Date.now();
     this.endsAt = Date.now() + chooseTimeMs;
   }

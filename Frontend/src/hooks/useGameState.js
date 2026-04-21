@@ -35,6 +35,13 @@ export function useGameState(socketRef) {
     };
     const clearWordOptions = () => setWordOptions([]);
     const onError = ({ message }) => setNotice(message);
+    const onKickedFromRoom = ({ message }) => {
+      setRoom(null);
+      setMessages([]);
+      setWordOptions([]);
+      setScreen("home");
+      setNotice(message || "You were removed from the match.");
+    };
 
     socket.on("room_joined", onRoomJoined);
     socket.on("room_state", onRoomState);
@@ -43,6 +50,7 @@ export function useGameState(socketRef) {
     socket.on("round_start", clearWordOptions);
     socket.on("game_over", clearWordOptions);
     socket.on("error", onError);
+    socket.on("kicked_from_room", onKickedFromRoom);
 
     return () => {
       socket.off("room_joined", onRoomJoined);
@@ -52,6 +60,7 @@ export function useGameState(socketRef) {
       socket.off("round_start", clearWordOptions);
       socket.off("game_over", clearWordOptions);
       socket.off("error", onError);
+      socket.off("kicked_from_room", onKickedFromRoom);
     };
   }, [socketRef]);
 

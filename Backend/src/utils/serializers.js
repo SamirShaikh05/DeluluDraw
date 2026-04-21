@@ -33,9 +33,28 @@ function roomSnapshot(room, forSocketId) {
     isPrivate: room.isPrivate,
     settings: room.settings,
     players: room.players.map(publicPlayer),
+    kickVotes: publicKickVotes(room, forSocketId),
     messages: room.chat.slice(-80),
     game: publicGame(room, forSocketId),
   };
+}
+
+function publicKickVotes(room, forSocketId) {
+  if (room.isPrivate || room.players.length < 3) return {};
+
+  const required = Math.floor(room.players.length / 2) + 1;
+  return Object.fromEntries(
+    Object.entries(room.kickVotes || {})
+      .filter(([targetId]) => room.players.some((player) => player.id === targetId))
+      .map(([targetId, voters]) => [
+        targetId,
+        {
+          count: voters.size,
+          required,
+          hasVoted: voters.has(forSocketId),
+        },
+      ])
+  );
 }
 
 function maskWord(word, revealedIndexes = []) {
@@ -52,6 +71,7 @@ function maskWord(word, revealedIndexes = []) {
 
 module.exports = {
   publicGame,
+  publicKickVotes,
   publicPlayer,
   roomSnapshot,
 };
