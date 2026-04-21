@@ -1,6 +1,6 @@
 import { PlayerList } from "../components/game/PlayerList";
 
-export function Lobby({ goHome, isHost, notice, players, room, startGame }) {
+export function Lobby({ goHome, isHost, notice, players, room, startGame, updateRoomSettings }) {
   const isPrivate = room.isPrivate;
   const waitingForPlayers = !isPrivate && players.length < 2;
 
@@ -17,12 +17,29 @@ export function Lobby({ goHome, isHost, notice, players, room, startGame }) {
               : "The public match is getting ready. You'll be moved into the round automatically."}
         </p>
         {isPrivate ? (
-          <div className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-[1fr_150px]">
+          <>
+            <label className="mt-6 grid max-w-40 gap-1.75 font-black text-white">
+              Rounds
+              <input
+                className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b] disabled:cursor-not-allowed disabled:bg-[#dbeafe]"
+                type="number"
+                min="1"
+                max="10"
+                value={room.settings.rounds}
+                onChange={(event) => updateRoomSettings({ rounds: event.target.value })}
+                disabled={!isHost}
+              />
+            </label>
+            <p className="mt-2 text-sm font-bold text-[#dbeafe]">
+              {isHost ? "Private rooms start with 3 rounds by default, but you can change it before starting." : "Only the host can change the round count before the game starts."}
+            </p>
+            <div className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-[1fr_150px]">
             <button className="min-h-12 w-full bg-[#58df28] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.14)] disabled:cursor-not-allowed disabled:opacity-62" onClick={startGame} disabled={!isHost} type="button">
               {isHost ? "Start Game" : "Waiting For Host"}
             </button>
             <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={goHome} type="button">Home</button>
-          </div>
+            </div>
+          </>
         ) : (
           <div className="mt-6 grid grid-cols-1 gap-2.5 sm:max-w-[150px]">
             <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={goHome} type="button">Home</button>

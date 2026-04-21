@@ -50,6 +50,13 @@ function App() {
     socketRef.current?.emit("start_game", { roomId: room?.roomId });
   }
 
+  function updateRoomSettings(nextSettings) {
+    socketRef.current?.emit("update_room_settings", {
+      roomId: room?.roomId,
+      settings: nextSettings,
+    });
+  }
+
   function chooseWord(word) {
     socketRef.current?.emit("word_chosen", { roomId: room?.roomId, word });
     setWordOptions([]);
@@ -72,8 +79,6 @@ function App() {
           setRoomCode={setRoomCode}
           createRoom={createRoom}
           joinRoom={joinRoom}
-          settings={settings}
-          setSettings={setSettings}
           notice={notice}
         />
       )}
@@ -84,6 +89,7 @@ function App() {
           players={players}
           isHost={isHost}
           startGame={startGame}
+          updateRoomSettings={updateRoomSettings}
           notice={notice}
           goHome={() => setScreen("home")}
         />

@@ -10,8 +10,6 @@ export function Home({
   roomCode,
   setPlayerName,
   setRoomCode,
-  setSettings,
-  settings,
 }) {
   return (
     <section className="relative z-10 flex flex-col items-center px-2.5 pb-15 pt-5.5 sm:px-4.5">
@@ -61,42 +59,6 @@ export function Home({
         <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={createRoom} type="button">Create Private Room</button>
         <p className="m-3 text-center text-sm font-bold text-[#dbeafe]">Leave the room code empty to join the public match.</p>
         {notice && <p className="m-3 text-center font-extrabold text-[#fff5f5]">{notice}</p>}
-      </div>
-
-      <div className="mt-7 grid w-full max-w-155 grid-cols-1 gap-2.5 text-white sm:grid-cols-3">
-        <label className="grid gap-1.75 font-black">
-          Rounds
-          <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
-            type="number"
-            min="1"
-            max="10"
-            value={settings.rounds}
-            onChange={(event) => setSettings({ ...settings, rounds: event.target.value })}
-          />
-        </label>
-        <label className="grid gap-1.75 font-black">
-          Draw time
-          <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
-            type="number"
-            min="15"
-            max="240"
-            value={settings.drawTime}
-            onChange={(event) => setSettings({ ...settings, drawTime: event.target.value })}
-          />
-        </label>
-        <label className="grid gap-1.75 font-black">
-          Seats
-          <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
-            type="number"
-            min="2"
-            max="20"
-            value={settings.maxPlayers}
-            onChange={(event) => setSettings({ ...settings, maxPlayers: event.target.value })}
-          />
-        </label>
       </div>
 
       <section className="mt-14 grid w-full max-w-235 grid-cols-1 gap-7 border-t border-t-[rgba(255,255,255,0.18)] pt-8.5 text-[#f4f8ff] md:grid-cols-3">

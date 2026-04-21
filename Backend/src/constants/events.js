@@ -5,6 +5,7 @@ const EVENTS = {
 
   CREATE_ROOM: "create_room",
   JOIN_ROOM: "join_room",
+  UPDATE_ROOM_SETTINGS: "update_room_settings",
   ROOM_JOINED: "room_joined",
   ROOM_STATE: "room_state",
   PLAYER_LIST: "player_list",

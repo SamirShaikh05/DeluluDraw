@@ -28,6 +28,21 @@ function registerRoomHandlers(io, socket) {
     emitRoomState(io, room);
   });
 
+  socket.on(EVENTS.UPDATE_ROOM_SETTINGS, ({ roomId, settings } = {}) => {
+    const id = sanitizeText(roomId).toUpperCase();
+    const room = rooms[id];
+    if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
+    if (!room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Public match settings are fixed." });
+    if (room.hostId !== socket.id) return socket.emit(EVENTS.ERROR, { message: "Only the host can change room settings." });
+    if (room.game) return socket.emit(EVENTS.ERROR, { message: "Can't change settings after the game starts." });
+
+    room.settings = normalizeSettings({
+      ...room.settings,
+      ...settings,
+    });
+    emitRoomState(io, room);
+  });
+
   socket.on(EVENTS.JOIN_ROOM, ({ roomId, playerName } = {}) => {
     const name = sanitizeName(playerName);
     const id = sanitizeText(roomId).toUpperCase();
