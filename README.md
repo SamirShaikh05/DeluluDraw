@@ -1,8 +1,8 @@
 # 🎨 DeluluDraw -- Real-Time Multiplayer Drawing Game
 
-## 🚀 Live Demo
+##  Live Demo
 
-👉 https://delulu-draw.vercel.app/
+ https://delulu-draw.vercel.app/
 
 ------------------------------------------------------------------------
 
