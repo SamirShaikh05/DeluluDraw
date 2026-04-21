@@ -42,7 +42,7 @@ function App() {
   function joinRoom() {
     socketRef.current?.emit("join_room", {
       playerName,
-      roomId: roomCode,
+      roomId: roomCode.trim(),
     });
   }
 

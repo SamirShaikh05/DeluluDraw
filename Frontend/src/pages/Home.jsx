@@ -14,7 +14,7 @@ export function Home({
   settings,
 }) {
   return (
-    <section className="relative z-10 flex flex-col items-center px-2.5 pb-[60px] pt-[22px] sm:px-[18px]">
+    <section className="relative z-10 flex flex-col items-center px-2.5 pb-15 pt-5.5 sm:px-4.5">
       <div className="text-center">
         <div
           className="font-['Comic_Sans_MS','Trebuchet_MS',sans-serif] text-[54px] leading-[0.9] font-black tracking-normal text-shadow-[-4px_-4px_0_#0b1320,4px_-4px_0_#0b1320,-4px_4px_0_#0b1320,4px_4px_0_#0b1320] sm:text-[78px]"
@@ -34,39 +34,40 @@ export function Home({
         <AvatarParade />
       </div>
 
-      <div className="mt-8 w-full max-w-[350px] bg-[rgba(15,70,163,0.76)] shadow-[0_12px_0_rgba(8,54,124,0.18)] sm:mt-12">
+      <div className="mt-8 w-full max-w-87.5 bg-[rgba(15,70,163,0.76)] shadow-[0_12px_0_rgba(8,54,124,0.18)] sm:mt-12">
         <div className="grid grid-cols-1 gap-1 sm:grid-cols-[1fr_112px]">
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-[13px] py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             value={playerName}
             onChange={(event) => setPlayerName(event.target.value)}
             placeholder="Enter your name"
             maxLength={20}
           />
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-[13px] py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             value={roomCode}
             onChange={(event) => setRoomCode(event.target.value.toUpperCase())}
-            placeholder="Room code"
+            placeholder="Room code (optional)"
             maxLength={5}
           />
         </div>
-        <div className="relative flex min-h-[122px] items-center justify-center gap-6 overflow-hidden">
+        <div className="relative flex min-h-30.5 items-center justify-center gap-6 overflow-hidden">
           <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{"<"}</button>
           <PixelFace />
           <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{">"}</button>
-          <img src={heroImage} alt="" className="absolute right-[10px] top-[14px] h-7 w-7 rounded border-2 border-[#0c2e6b] object-cover" />
+          <img src={heroImage} alt="" className="absolute right-2.5 top-3.5 h-7 w-7 rounded border-2 border-[#0c2e6b] object-cover" />
         </div>
         <button className="min-h-12 w-full bg-[#58df28] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.14)]" onClick={joinRoom} type="button">Play!</button>
         <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={createRoom} type="button">Create Private Room</button>
+        <p className="m-3 text-center text-sm font-bold text-[#dbeafe]">Leave the room code empty to join the public match.</p>
         {notice && <p className="m-3 text-center font-extrabold text-[#fff5f5]">{notice}</p>}
       </div>
 
-      <div className="mt-7 grid w-full max-w-[620px] grid-cols-1 gap-2.5 text-white sm:grid-cols-3">
-        <label className="grid gap-[7px] font-black">
+      <div className="mt-7 grid w-full max-w-155 grid-cols-1 gap-2.5 text-white sm:grid-cols-3">
+        <label className="grid gap-1.75 font-black">
           Rounds
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="1"
             max="10"
@@ -74,10 +75,10 @@ export function Home({
             onChange={(event) => setSettings({ ...settings, rounds: event.target.value })}
           />
         </label>
-        <label className="grid gap-[7px] font-black">
+        <label className="grid gap-1.75 font-black">
           Draw time
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="15"
             max="240"
@@ -85,10 +86,10 @@ export function Home({
             onChange={(event) => setSettings({ ...settings, drawTime: event.target.value })}
           />
         </label>
-        <label className="grid gap-[7px] font-black">
+        <label className="grid gap-1.75 font-black">
           Seats
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-2.25 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="2"
             max="20"
@@ -98,7 +99,7 @@ export function Home({
         </label>
       </div>
 
-      <section className="mt-14 grid w-full max-w-[940px] grid-cols-1 gap-7 border-t border-t-[rgba(255,255,255,0.18)] pt-[34px] text-[#f4f8ff] md:grid-cols-3">
+      <section className="mt-14 grid w-full max-w-235 grid-cols-1 gap-7 border-t border-t-[rgba(255,255,255,0.18)] pt-8.5 text-[#f4f8ff] md:grid-cols-3">
         <article className="text-center">
           <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">?</span>
           <h2 className="mb-3 text-2xl font-bold">About</h2>

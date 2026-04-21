@@ -11,15 +11,20 @@ export function useGameState(socketRef) {
     const socket = socketRef.current;
     if (!socket) return undefined;
 
-    const onRoomJoined = ({ roomId }) => {
-      setRoom((current) => (current ? { ...current, roomId } : current));
+    const onRoomJoined = ({ roomId, hostId }) => {
+      setRoom((current) => ({ ...(current || {}), roomId, hostId }));
       setScreen("lobby");
       setNotice("");
     };
     const onRoomState = (snapshot) => {
       setRoom(snapshot);
       setMessages(snapshot.messages || []);
-      if (snapshot.game) setScreen(snapshot.game.phase === "lobby" ? "lobby" : "game");
+      if (snapshot.game) {
+        setScreen("game");
+      } else {
+        setWordOptions([]);
+        setScreen("lobby");
+      }
     };
     const onMessage = (message) => {
       setMessages((current) => [...current.slice(-90), message]);

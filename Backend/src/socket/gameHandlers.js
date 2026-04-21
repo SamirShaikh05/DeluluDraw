@@ -1,5 +1,9 @@
 const EVENTS = require("../constants/events");
-const { CHOOSE_TIME_MS, ROUND_TRANSITION_MS } = require("../constants/config");
+const {
+  CHOOSE_TIME_MS,
+  MIN_PLAYERS_TO_START,
+  ROUND_TRANSITION_MS,
+} = require("../constants/config");
 const Game = require("../core/Game");
 const rooms = require("../store/rooms");
 const { emitRoomState } = require("../utils/broadcast");
@@ -15,8 +19,11 @@ function registerGameHandlers(io, socket) {
   socket.on(EVENTS.START_GAME, ({ roomId } = {}) => {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
+    if (!room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Public matches start automatically." });
     if (room.hostId !== socket.id) return socket.emit(EVENTS.ERROR, { message: "Only the host can start." });
-    startGame(io, room);
+    if (!startGame(io, room)) {
+      socket.emit(EVENTS.ERROR, { message: `Need at least ${MIN_PLAYERS_TO_START} players to start.` });
+    }
   });
 
   socket.on(EVENTS.WORD_CHOSEN, ({ roomId, word } = {}) => {
@@ -28,17 +35,39 @@ function registerGameHandlers(io, socket) {
 }
 
 function startGame(io, room) {
+  if (room.players.length < MIN_PLAYERS_TO_START) return false;
+
   room.players.forEach((player) => {
     player.score = 0;
     player.hasGuessed = false;
   });
   room.game = new Game(room.settings, room.players.length);
   beginChoosing(io, room);
+  return true;
+}
+
+function resetRoomToWaiting(io, room, message) {
+  if (room.game) clearTimers(room.game);
+  room.game = null;
+
+  room.players.forEach((player) => {
+    player.score = 0;
+    player.hasGuessed = false;
+  });
+
+  if (message) {
+    addMessage(io, room, {
+      type: "system",
+      text: message,
+    });
+  }
+
+  emitRoomState(io, room);
 }
 
 function beginChoosing(io, room) {
   const game = room.game;
-  if (!game || room.players.length === 0) return;
+  if (!game || room.players.length < MIN_PLAYERS_TO_START) return;
 
   clearTimers(game);
   room.players.forEach((player) => {
@@ -54,6 +83,11 @@ function beginChoosing(io, room) {
   });
   io.to(drawer.id).emit(EVENTS.CHOOSE_WORD, { wordOptions: game.wordOptions });
   emitRoomState(io, room);
+
+  game.tickRef = setInterval(() => {
+    if (game.phase !== "choosing") return;
+    emitRoomState(io, room);
+  }, 1000);
 
   game.timerRef = setTimeout(() => {
     if (game.phase === "choosing") chooseWord(io, room, drawer.id, game.wordOptions[0]);
@@ -137,7 +171,26 @@ function endRound(io, roomId) {
     if (!latestRoom?.game) return;
 
     latestRoom.game.advanceTurn();
-    if (latestRoom.game.isComplete() || latestRoom.players.length === 0) {
+    if (latestRoom.players.length < MIN_PLAYERS_TO_START) {
+      if (latestRoom.isPrivate) {
+        latestRoom.game.phase = "game_over";
+        emitRoomState(io, latestRoom);
+      } else {
+        resetRoomToWaiting(io, latestRoom, "Not enough players. Waiting for more players.");
+      }
+      return;
+    }
+
+    if (latestRoom.game.isComplete()) {
+      if (!latestRoom.isPrivate) {
+        addMessage(io, latestRoom, {
+          type: "system",
+          text: "Match complete. Starting a new public game.",
+        });
+        startGame(io, latestRoom);
+        return;
+      }
+
       latestRoom.game.phase = "game_over";
       const leaderboard = [...latestRoom.players]
         .sort((a, b) => b.score - a.score)
@@ -183,5 +236,6 @@ module.exports = {
   endRound,
   handleCorrectGuess,
   registerGameHandlers,
+  resetRoomToWaiting,
   startGame,
 };

@@ -1,8 +1,9 @@
 class Room {
-  constructor(id, hostPlayer, settings) {
+  constructor(id, hostPlayer, settings, options = {}) {
     this.id = id;
-    this.hostId = hostPlayer.id;
-    this.players = [hostPlayer];
+    this.isPrivate = options.isPrivate ?? true;
+    this.hostId = hostPlayer?.id || "";
+    this.players = hostPlayer ? [hostPlayer] : [];
     this.chat = [];
     this.settings = settings;
     this.game = null;
@@ -10,6 +11,7 @@ class Room {
 
   addPlayer(player) {
     this.players.push(player);
+    if (!this.hostId) this.hostId = player.id;
   }
 
   removePlayer(playerId) {

@@ -30,6 +30,7 @@ function roomSnapshot(room, forSocketId) {
   return {
     roomId: room.id,
     hostId: room.hostId,
+    isPrivate: room.isPrivate,
     settings: room.settings,
     players: room.players.map(publicPlayer),
     messages: room.chat.slice(-80),

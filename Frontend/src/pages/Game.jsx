@@ -25,7 +25,7 @@ export function Game({
   return (
     <section className="mx-auto mb-7 mt-3 w-[min(100%-24px,1170px)]">
       <div className="grid min-h-15.5 grid-cols-[62px_minmax(0,1fr)_72px] items-center rounded-t-[7px] border-[3px] border-[#0c3579] bg-white md:grid-cols-[72px_minmax(0,1fr)_90px]">
-        <div className="ml-[-2px] grid h-[58px] w-[58px] place-items-center rounded-full border-[5px] border-[#111827] bg-white font-black text-[#111827]">
+        <div className="-ml-0.5 grid h-14.5 w-14.5 place-items-center rounded-full border-[5px] border-[#111827] bg-white font-black text-[#111827]">
           <span>{game?.remaining ?? 0}</span>
         </div>
         <WordDisplay game={game} isDrawer={isDrawer} totalRounds={room.settings.rounds} />
