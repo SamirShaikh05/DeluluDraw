@@ -24,7 +24,7 @@ function App() {
 
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [settings] = useState(DEFAULT_SETTINGS);
 
   const game = room?.game;
   const me = players.find((player) => player.id === myId);

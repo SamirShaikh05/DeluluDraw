@@ -12,10 +12,10 @@ export function Home({
   setRoomCode,
 }) {
   return (
-    <section className="relative z-10 flex flex-col items-center px-2.5 pb-15 pt-5.5 sm:px-4.5">
+    <section className="relative z-10 flex flex-col items-center px-4 pb-20 pt-8 sm:px-6">
       <div className="text-center">
         <div
-          className="font-['Comic_Sans_MS','Trebuchet_MS',sans-serif] text-[54px] leading-[0.9] font-black tracking-normal text-shadow-[-4px_-4px_0_#0b1320,4px_-4px_0_#0b1320,-4px_4px_0_#0b1320,4px_4px_0_#0b1320] sm:text-[78px]"
+          className="font-['Comic_Sans_MS','Trebuchet_MS',sans-serif] text-[56px] leading-[0.9] font-black tracking-normal text-shadow-[-4px_-4px_0_#0b1320,4px_-4px_0_#0b1320,-4px_4px_0_#0b1320,4px_4px_0_#0b1320] sm:text-[80px]"
           aria-label="deluludraw"
         >
           <span style={{ color: "#ef4444" }}>d</span>
@@ -32,50 +32,64 @@ export function Home({
         <AvatarParade />
       </div>
 
-      <div className="mt-8 w-full max-w-87.5 bg-[rgba(15,70,163,0.76)] shadow-[0_12px_0_rgba(8,54,124,0.18)] sm:mt-12">
-        <div className="grid grid-cols-1 gap-1 sm:grid-cols-[1fr_112px]">
+      <div className="mt-10 w-full max-w-md rounded-xl bg-gradient-to-br from-[rgba(15,70,163,0.8)] to-[rgba(9,50,122,0.8)] shadow-2xl p-8">
+        <div className="flex items-between gap-5">
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-7/11 rounded-lg border-2 border-[#d4dded] bg-white px-4 py-4 text-lg font-bold text-[#172033] outline-none focus:border-[#72e34b] focus:ring-2 focus:ring-[#72e34b]/20 transition-colors placeholder:text-gray-400"
             value={playerName}
             onChange={(event) => setPlayerName(event.target.value)}
             placeholder="Enter your name"
             maxLength={20}
           />
           <input
-            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            className="w-4/11 rounded-lg border-2 border-[#d4dded] bg-white px-4 py-4 text-lg font-bold text-[#172033] outline-none focus:border-[#72e34b] focus:ring-2 focus:ring-[#72e34b]/20 transition-colors placeholder:text-gray-400"
             value={roomCode}
             onChange={(event) => setRoomCode(event.target.value.toUpperCase())}
-            placeholder="Room code (optional)"
+            placeholder="Room code"
             maxLength={5}
           />
         </div>
-        <div className="relative flex min-h-30.5 items-center justify-center gap-6 overflow-hidden">
-          <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{"<"}</button>
+        <div className="relative flex min-h-32 items-center justify-center gap-8 overflow-hidden mt-6">
+          <button className="bg-transparent text-[60px] leading-none text-white [text-shadow:4px_4px_0_#061731] hover:scale-110 transition-transform" type="button">{"<"}</button>
           <PixelFace />
-          <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{">"}</button>
-          <img src={heroImage} alt="" className="absolute right-2.5 top-3.5 h-7 w-7 rounded border-2 border-[#0c2e6b] object-cover" />
+          <button className="bg-transparent text-[60px] leading-none text-white [text-shadow:4px_4px_0_#061731] hover:scale-110 transition-transform" type="button">{">"}</button>
+          <img src={heroImage} alt="" className="absolute right-3 top-4 h-8 w-8 rounded border-2 border-[#0c2e6b] object-cover" />
         </div>
-        <button className="min-h-12 w-full bg-[#58df28] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.14)]" onClick={joinRoom} type="button">Play!</button>
-        <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={createRoom} type="button">Create Private Room</button>
-        <p className="m-3 text-center text-sm font-bold text-[#dbeafe]">Leave the room code empty to join the public match.</p>
-        {notice && <p className="m-3 text-center font-extrabold text-[#fff5f5]">{notice}</p>}
+        <div className="space-y-3 mt-6">
+          <button
+            className="min-h-14 w-full rounded-lg bg-[#58df28] text-xl font-extrabold text-white shadow-lg transition-all hover:bg-[#4ade80] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#58df28] hover:scale-105"
+            onClick={joinRoom}
+            type="button"
+          >
+            Play!
+          </button>
+          <button
+            className="min-h-14 w-full rounded-lg bg-[#2f97e8] text-xl font-extrabold text-white shadow-lg transition-all hover:bg-[#3b82f6] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#2f97e8] hover:scale-105"
+            onClick={createRoom}
+            type="button"
+          >
+            Create Private Room
+          </button>
+        </div>
+        <p className="mt-4 text-center text-sm font-bold text-[#dbeafe]">Leave the room code empty to join the public match.</p>
+        {notice && <p className="mt-4 text-center font-extrabold text-[#fff5f5] text-lg bg-red-500/20 rounded-lg p-3">{notice}</p>}
       </div>
 
-      <section className="mt-14 grid w-full max-w-235 grid-cols-1 gap-7 border-t border-t-[rgba(255,255,255,0.18)] pt-8.5 text-[#f4f8ff] md:grid-cols-3">
-        <article className="text-center">
-          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">?</span>
-          <h2 className="mb-3 text-2xl font-bold">About</h2>
-          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Draw the secret word while friends race to guess it. Correct guesses score fast, and the artist gets a bonus when people solve the sketch.</p>
+      <section className="mt-16 grid w-full max-w-4xl grid-cols-1 gap-8 border-t border-t-[rgba(255,255,255,0.18)] pt-10 text-[#f4f8ff] md:grid-cols-3">
+        <article className="text-center rounded-lg bg-white/5 p-6 backdrop-blur-sm">
+          <span className="mb-4 block text-[48px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">?</span>
+          <h2 className="mb-4 text-2xl font-bold">About</h2>
+          <p className="m-0 font-bold leading-relaxed text-[#dbeafe]">Draw the secret word while friends race to guess it. Correct guesses score fast, and the artist gets a bonus when people solve the sketch.</p>
         </article>
-        <article className="text-center">
-          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">#</span>
-          <h2 className="mb-3 text-2xl font-bold">Room Code</h2>
-          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Create a private room, share the five-letter code, and start when everyone is ready.</p>
+        <article className="text-center rounded-lg bg-white/5 p-6 backdrop-blur-sm">
+          <span className="mb-4 block text-[48px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">#</span>
+          <h2 className="mb-4 text-2xl font-bold">Room Code</h2>
+          <p className="m-0 font-bold leading-relaxed text-[#dbeafe]">Create a private room, share the five-letter code, and start when everyone is ready.</p>
         </article>
-        <article className="text-center">
-          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">/</span>
-          <h2 className="mb-3 text-2xl font-bold">How To Play</h2>
-          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Pick a word, draw with the toolbar, type guesses in chat, and survive the scoreboard chaos.</p>
+        <article className="text-center rounded-lg bg-white/5 p-6 backdrop-blur-sm">
+          <span className="mb-4 block text-[48px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">/</span>
+          <h2 className="mb-4 text-2xl font-bold">How To Play</h2>
+          <p className="m-0 font-bold leading-relaxed text-[#dbeafe]">Pick a word, draw with the toolbar, type guesses in chat, and survive the scoreboard chaos.</p>
         </article>
       </section>
     </section>
