@@ -14,9 +14,12 @@ export function Home({
   settings,
 }) {
   return (
-    <section className="home-screen">
-      <div className="logo-wrap">
-        <div className="sketch-logo" aria-label="deluludraw">
+    <section className="relative z-10 flex flex-col items-center px-2.5 pb-[60px] pt-[22px] sm:px-[18px]">
+      <div className="text-center">
+        <div
+          className="font-['Comic_Sans_MS','Trebuchet_MS',sans-serif] text-[54px] leading-[0.9] font-black tracking-normal text-shadow-[-4px_-4px_0_#0b1320,4px_-4px_0_#0b1320,-4px_4px_0_#0b1320,4px_4px_0_#0b1320] sm:text-[78px]"
+          aria-label="deluludraw"
+        >
           <span style={{ color: "#ef4444" }}>d</span>
           <span style={{ color: "#f97316" }}>e</span>
           <span style={{ color: "#fde047" }}>l</span>
@@ -26,31 +29,44 @@ export function Home({
           <span style={{ color: "#a855f7" }}>d</span>
           <span style={{ color: "#ec4899" }}>r</span>
           <span style={{ color: "#f8fafc" }}>a</span>
-          <span className="pencil">w</span>
+          <span className="text-amber-500">w</span>
         </div>
         <AvatarParade />
       </div>
 
-      <div className="join-panel">
-        <div className="entry-row">
-          <input value={playerName} onChange={(event) => setPlayerName(event.target.value)} placeholder="Enter your name" maxLength={20} />
-          <input value={roomCode} onChange={(event) => setRoomCode(event.target.value.toUpperCase())} placeholder="Room code" maxLength={5} />
+      <div className="mt-8 w-full max-w-[350px] bg-[rgba(15,70,163,0.76)] shadow-[0_12px_0_rgba(8,54,124,0.18)] sm:mt-12">
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-[1fr_112px]">
+          <input
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-[13px] py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            value={playerName}
+            onChange={(event) => setPlayerName(event.target.value)}
+            placeholder="Enter your name"
+            maxLength={20}
+          />
+          <input
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-[13px] py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b]"
+            value={roomCode}
+            onChange={(event) => setRoomCode(event.target.value.toUpperCase())}
+            placeholder="Room code"
+            maxLength={5}
+          />
         </div>
-        <div className="mascot-stage">
-          <button className="arrow" type="button">{"<"}</button>
+        <div className="relative flex min-h-[122px] items-center justify-center gap-6 overflow-hidden">
+          <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{"<"}</button>
           <PixelFace />
-          <button className="arrow" type="button">{">"}</button>
-          <img src={heroImage} alt="" className="hero-stamp" />
+          <button className="bg-transparent text-[56px] leading-none text-white [text-shadow:4px_4px_0_#061731]" type="button">{">"}</button>
+          <img src={heroImage} alt="" className="absolute right-[10px] top-[14px] h-7 w-7 rounded border-2 border-[#0c2e6b] object-cover" />
         </div>
-        <button className="play-button" onClick={joinRoom} type="button">Play!</button>
-        <button className="private-button" onClick={createRoom} type="button">Create Private Room</button>
-        {notice && <p className="notice">{notice}</p>}
+        <button className="min-h-12 w-full bg-[#58df28] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.14)]" onClick={joinRoom} type="button">Play!</button>
+        <button className="min-h-12 w-full bg-[#2f97e8] text-lg font-extrabold text-white shadow-[inset_0_-4px_0_rgba(0,0,0,0.12)]" onClick={createRoom} type="button">Create Private Room</button>
+        {notice && <p className="m-3 text-center font-extrabold text-[#fff5f5]">{notice}</p>}
       </div>
 
-      <div className="settings-strip">
-        <label>
+      <div className="mt-7 grid w-full max-w-[620px] grid-cols-1 gap-2.5 text-white sm:grid-cols-3">
+        <label className="grid gap-[7px] font-black">
           Rounds
           <input
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="1"
             max="10"
@@ -58,9 +74,10 @@ export function Home({
             onChange={(event) => setSettings({ ...settings, rounds: event.target.value })}
           />
         </label>
-        <label>
+        <label className="grid gap-[7px] font-black">
           Draw time
           <input
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="15"
             max="240"
@@ -68,9 +85,10 @@ export function Home({
             onChange={(event) => setSettings({ ...settings, drawTime: event.target.value })}
           />
         </label>
-        <label>
+        <label className="grid gap-[7px] font-black">
           Seats
           <input
+            className="w-full rounded-[3px] border-2 border-[#d4dded] bg-white px-2.5 py-[9px] font-bold text-[#172033] outline-none focus:border-[#72e34b]"
             type="number"
             min="2"
             max="20"
@@ -80,21 +98,21 @@ export function Home({
         </label>
       </div>
 
-      <section className="info-grid">
-        <article>
-          <span className="section-icon">?</span>
-          <h2>About</h2>
-          <p>Draw the secret word while friends race to guess it. Correct guesses score fast, and the artist gets a bonus when people solve the sketch.</p>
+      <section className="mt-14 grid w-full max-w-[940px] grid-cols-1 gap-7 border-t border-t-[rgba(255,255,255,0.18)] pt-[34px] text-[#f4f8ff] md:grid-cols-3">
+        <article className="text-center">
+          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">?</span>
+          <h2 className="mb-3 text-2xl font-bold">About</h2>
+          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Draw the secret word while friends race to guess it. Correct guesses score fast, and the artist gets a bonus when people solve the sketch.</p>
         </article>
-        <article>
-          <span className="section-icon">#</span>
-          <h2>Room Code</h2>
-          <p>Create a private room, share the five-letter code, and start when everyone is ready.</p>
+        <article className="text-center">
+          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">#</span>
+          <h2 className="mb-3 text-2xl font-bold">Room Code</h2>
+          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Create a private room, share the five-letter code, and start when everyone is ready.</p>
         </article>
-        <article>
-          <span className="section-icon">/</span>
-          <h2>How To Play</h2>
-          <p>Pick a word, draw with the toolbar, type guesses in chat, and survive the scoreboard chaos.</p>
+        <article className="text-center">
+          <span className="mb-2 block text-[42px] font-black text-[#f2e84b] [text-shadow:3px_3px_0_#071a38]">/</span>
+          <h2 className="mb-3 text-2xl font-bold">How To Play</h2>
+          <p className="m-0 font-bold leading-[1.55] text-[#dbeafe]">Pick a word, draw with the toolbar, type guesses in chat, and survive the scoreboard chaos.</p>
         </article>
       </section>
     </section>
