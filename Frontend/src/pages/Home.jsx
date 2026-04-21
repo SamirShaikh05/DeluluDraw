@@ -1,4 +1,3 @@
-import heroImage from "../assets/hero.png";
 import { AvatarParade } from "../components/home/AvatarParade";
 import { PixelFace } from "../components/home/PixelFace";
 
@@ -53,7 +52,6 @@ export function Home({
           <button className="bg-transparent text-[60px] leading-none text-white [text-shadow:4px_4px_0_#061731] hover:scale-110 transition-transform" type="button">{"<"}</button>
           <PixelFace />
           <button className="bg-transparent text-[60px] leading-none text-white [text-shadow:4px_4px_0_#061731] hover:scale-110 transition-transform" type="button">{">"}</button>
-          <img src={heroImage} alt="" className="absolute right-3 top-4 h-8 w-8 rounded border-2 border-[#0c2e6b] object-cover" />
         </div>
         <div className="space-y-3 mt-6">
           <button
