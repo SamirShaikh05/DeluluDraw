@@ -8,7 +8,7 @@ Synchronization, Multiplayer Systems\
 
 ------------------------------------------------------------------------
 
-# 🚀 Project Overview
+# Project Overview
 
 DeluluDraw is a real-time multiplayer drawing and guessing game where
 players join rooms, draw words, and guess them in real time. The system
@@ -19,7 +19,7 @@ logic, while the frontend renders real-time updates seamlessly.
 
 ------------------------------------------------------------------------
 
-# 🎯 Objective
+# Objective
 
 The objective of this project is to build a **real-time distributed
 system** that:
@@ -32,7 +32,7 @@ system** that:
 
 ------------------------------------------------------------------------
 
-# ⚙️ Core Features
+# Core Features
 
 ## Multiplayer System
 
@@ -74,7 +74,7 @@ system** that:
 
 ------------------------------------------------------------------------
 
-# 🏗️ High-Level Architecture
+# High-Level Architecture
 
 The system follows a **client-server model**:
 
@@ -84,7 +84,7 @@ The system follows a **client-server model**:
 
 ------------------------------------------------------------------------
 
-# 🔄 Flow Chart
+# Flow Chart
 
 ## Mermaid
 
@@ -125,7 +125,7 @@ Q --> F;
 
 ------------------------------------------------------------------------
 
-# 🔌 WebSocket Architecture
+#  WebSocket Architecture
 
 ## Room Events
 
@@ -155,7 +155,7 @@ Q --> F;
 
 ------------------------------------------------------------------------
 
-# 🧠 System Design Concepts
+# System Design Concepts
 
 ## Server as Source of Truth
 
@@ -176,7 +176,7 @@ Only minimal drawing data (coordinates) is transmitted, not full canvas.
 
 ------------------------------------------------------------------------
 
-# 📂 Project Structure
+# Project Structure
 
     DeluluDraw/
     ├── Backend/
@@ -199,7 +199,7 @@ Only minimal drawing data (coordinates) is transmitted, not full canvas.
 
 ------------------------------------------------------------------------
 
-# 🛠️ Tech Stack
+# Tech Stack
 
   Layer        Technology
   ------------ ---------------------------
@@ -211,7 +211,7 @@ Only minimal drawing data (coordinates) is transmitted, not full canvas.
 
 ------------------------------------------------------------------------
 
-# ⚡ Setup Instructions
+# Setup Instructions
 
 ## Backend
 
@@ -231,7 +231,7 @@ npm run dev
 
 ------------------------------------------------------------------------
 
-# 🌍 Environment Variables
+# Environment Variables
 
 ## Backend
 
@@ -244,7 +244,7 @@ VITE_SERVER_URL=http://localhost:4000
 
 ------------------------------------------------------------------------
 
-# 🚀 Deployment
+# Deployment
 
 -   **Frontend:** Vercel
 -   **Backend:** Render
@@ -253,7 +253,7 @@ Live URL: https://delulu-draw.vercel.app/
 
 ------------------------------------------------------------------------
 
-# 🔍 Key Learnings
+# Key Learnings
 
 -   Building real-time systems using WebSockets
 -   Managing distributed state across clients
@@ -263,7 +263,7 @@ Live URL: https://delulu-draw.vercel.app/
 
 ------------------------------------------------------------------------
 
-# 📈 Future Improvements
+# Future Improvements
 
 -   AI-based drawing hints
 -   Mobile responsiveness improvements
@@ -273,7 +273,7 @@ Live URL: https://delulu-draw.vercel.app/
 
 ------------------------------------------------------------------------
 
-# 🧾 Conclusion
+# Conclusion
 
 DeluluDraw demonstrates a complete real-time multiplayer system with
 scalable architecture, efficient communication, and robust game logic,
