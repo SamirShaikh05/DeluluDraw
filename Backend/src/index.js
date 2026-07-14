@@ -3,12 +3,12 @@ const cors = require("cors");
 const { createServer } = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
+const dotenv = require("dotenv");
 
 const registerSocketHandlers = require("./socket/socketHandler");
 const rooms = require("./store/rooms");
-const loadEnv = require("./utils/env");
 
-loadEnv(path.join(__dirname, "..", ".env"));
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const PORT = process.env.PORT || 4000;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
