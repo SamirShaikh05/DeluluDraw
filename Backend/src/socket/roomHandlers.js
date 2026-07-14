@@ -4,20 +4,28 @@ const Player = require("../core/Player");
 const Room = require("../core/Room");
 const rooms = require("../store/rooms");
 const { emitRoomState } = require("../utils/broadcast");
-const createRoomId = require("../utils/idGenerator");
 const { addMessage } = require("../utils/messages");
 const { getDrawer } = require("../utils/roomState");
 const { publicPlayer } = require("../utils/serializers");
 const { clearTimers } = require("../utils/timers");
 const { normalizeSettings, sanitizeName, sanitizeText } = require("../utils/validators");
 const { beginChoosing, endRound, resetRoomToWaiting, startGame } = require("./gameHandlers");
+const { customAlphabet } = require("nanoid");
+
+const createRoomId = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 5);
+
+function createUniqueRoomId() {
+  let id = createRoomId();
+  while (rooms[id]) id = createRoomId();
+  return id;
+}
 
 function registerRoomHandlers(io, socket) {
   socket.on(EVENTS.CREATE_ROOM, ({ playerName, settings } = {}) => {
     const name = sanitizeName(playerName);
     if (!name) return socket.emit(EVENTS.ERROR, { message: "Enter a name first." });
 
-    const roomId = createRoomId();
+    const roomId = createUniqueRoomId();
     const player = new Player(socket.id, name);
     const room = new Room(roomId, player, normalizeSettings(settings), { isPrivate: true });
     rooms[roomId] = room;
