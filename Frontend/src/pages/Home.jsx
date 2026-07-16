@@ -140,7 +140,7 @@ export function Home({
       </div>
 
       <motion.div
-        className="mt-10 w-full max-w-md rounded-xl bg-gradient-to-br from-[rgba(15,70,163,0.8)] to-[rgba(9,50,122,0.8)] shadow-2xl p-8"
+        className="mt-10 w-full max-w-md rounded-xl bg-linear-to-br from-[rgba(15,70,163,0.8)] to-[rgba(9,50,122,0.8)] shadow-2xl p-8"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1.2, duration: 0.5 }}

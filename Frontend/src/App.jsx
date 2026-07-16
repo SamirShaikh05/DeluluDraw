@@ -71,7 +71,7 @@ function App() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#2366bd] [background-image:linear-gradient(180deg,rgba(36,103,195,0.94),rgba(22,80,170,0.92))]">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#2366bd] bg-[linear-gradient(180deg,rgba(36,103,195,0.94),rgba(22,80,170,0.92))]">
       <DoodleLayer static={screen === "game"} />
       <Navbar connected={connected} goHome={() => setScreen(room ? "lobby" : "home")} />
 

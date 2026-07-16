@@ -18,7 +18,7 @@ export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote,
           return (
             <div
               key={player.id}
-              className={`grid grid-cols-[28px_minmax(0,1fr)_30px] items-center gap-1.5 px-2 py-1.5 min-h-[44px] border-t border-gray-200 ${player.id === drawerId
+              className={`grid grid-cols-[28px_minmax(0,1fr)_30px] items-center gap-1.5 px-2 py-1.5 min-h-11 border-t border-gray-200 ${player.id === drawerId
                   ? "bg-[#cbf8ba]"
                   : index % 2 === 0
                     ? "bg-white"

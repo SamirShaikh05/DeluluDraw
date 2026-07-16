@@ -17,7 +17,7 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
   }
 
   return (
-    <aside className="grid h-90 min-h-90 grid-rows-[minmax(0,1fr)_44px] border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:h-[calc(min(62vh,560px)+58px)] md:min-h-[488px] md:border-t-0">
+    <aside className="grid h-90 min-h-90 grid-rows-[minmax(0,1fr)_44px] border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:h-[calc(min(62vh,560px)+58px)] md:min-h-122 md:border-t-0">
       <div className="chat-stream overflow-y-auto bg-[#f6f6f6]" ref={scrollRef}>
         {messages.map((message) => (
           <MessageItem message={message} key={message.id} />

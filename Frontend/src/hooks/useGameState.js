@@ -11,7 +11,6 @@ export function useGameState(socketRef) {
     const socket = socketRef.current;
     if (!socket) return undefined;
 
-    // add this handler function with the others at the top of the useEffect
     const onKickVote = ({ voterName, targetName, count, required }) => {
       setMessages((current) => [
         ...current.slice(-90),

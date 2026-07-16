@@ -19,7 +19,7 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
 
   return (
     <section className="relative z-10 mx-auto my-14.5 grid w-[min(100%-20px,620px)] grid-cols-1 gap-6 md:w-[min(100%-28px,920px)] md:grid-cols-[minmax(0,1fr)_320px] md:gap-8">
-      <div className="rounded-xl border-4 border-[rgba(255,255,255,0.2)] bg-gradient-to-br from-[rgba(9,50,122,0.8)] to-[rgba(15,70,163,0.8)] p-8 text-white shadow-2xl md:p-12">
+      <div className="rounded-xl border-4 border-[rgba(255,255,255,0.2)] bg-linear-to-br from-[rgba(9,50,122,0.8)] to-[rgba(15,70,163,0.8)] p-8 text-white shadow-2xl md:p-12">
         <p className="m-0 font-black uppercase text-[#f2e84b] text-lg tracking-wide">{isPrivate ? "Private Room" : "Public Match"}</p>
         {isPrivate ? (
           <div className="mt-4 flex items-center gap-4">
