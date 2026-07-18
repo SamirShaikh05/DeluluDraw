@@ -23,14 +23,22 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
           <MessageItem message={message} key={message.id} />
         ))}
       </div>
-      <form onSubmit={submit}>
+      <form className="flex items-stretch" onSubmit={submit}>
         <input
-          className="h-11 rounded-none border-2 border-[#d4dded] px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b] disabled:cursor-not-allowed disabled:opacity-100"
+          className="h-11 flex-1 rounded-none border-2 border-[#d4dded] px-3.25 py-3 font-bold text-[#172033] outline-none focus:border-[#72e34b] disabled:cursor-not-allowed disabled:opacity-100"
           value={text}
           onChange={(event) => setText(event.target.value)}
           placeholder={disabled ? `${drawer?.name || "Artist"} is drawing` : "Type your guess here..."}
           disabled={disabled}
         />
+        <button
+          type="submit"
+          className="h-11 w-12 shrink-0 border-2 border-[#0c3579] bg-[#0c3579] px-2 text-sm font-bold text-white transition-colors hover:bg-[#0a2a61] disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={disabled || !text.trim()}
+          aria-label="Send guess"
+        >
+          Send
+        </button>
       </form>
     </aside>
   );
