@@ -1,280 +1,357 @@
-# 🎨 DeluluDraw -- Real-Time Multiplayer Drawing Game
+# DeluluDraw
 
-**Author:** Samir Jamil Shaikh\
-**Project Type:** Full Stack / Real-Time Systems\
-**Core Concepts:** WebSockets, Event-Driven Architecture, State
-Synchronization, Multiplayer Systems\
-**Live Demo:** https://delulu-draw.vercel.app/
+DeluluDraw is a real-time multiplayer drawing and guessing game built as a full-stack, event-driven application. It combines a React frontend, a Node.js backend, and Socket.IO to deliver live gameplay where players can join rooms, draw, guess, chat, and compete in synchronized rounds.
 
-------------------------------------------------------------------------
+Live Demo: https://delulu-draw.vercel.app/
 
-# Project Overview
+This project is more than a game prototype. It is an engineering-oriented implementation of a real-time system with room management, game state synchronization, live event propagation, and a modular architecture that can evolve into a production-scale multiplayer platform.
 
-DeluluDraw is a real-time multiplayer drawing and guessing game where
-players join rooms, draw words, and guess them in real time. The system
-ensures synchronized gameplay across multiple users using WebSockets.
+---
 
-The backend acts as the **single source of truth**, managing all game
-logic, while the frontend renders real-time updates seamlessly.
+## Why this project is valuable
 
-------------------------------------------------------------------------
+DeluluDraw demonstrates several important software engineering concepts in one application:
 
-# Objective
+- Real-time communication using WebSockets and event streaming
+- Server-authoritative game state to avoid inconsistent or cheating behavior
+- A clear separation between presentation, gameplay logic, and transport layer
+- A modular backend that can grow into a multi-instance distributed system
+- A polished frontend experience for interactive real-time gameplay
 
-The objective of this project is to build a **real-time distributed
-system** that:
+---
 
--   Synchronizes multiple clients instantly
--   Maintains consistent game state across users
--   Handles player interactions (drawing, guessing, chat)
--   Ensures scalability and performance
--   Supports reconnection and mid-game joining
+## What the product does
 
-------------------------------------------------------------------------
+Players can:
 
-# Core Features
+- create or join rooms
+- play turn-based drawing rounds
+- guess the drawing in real time
+- chat and exchange messages during gameplay
+- track scores and leaderboard progression
+- join ongoing rooms and experience synchronized updates
 
-## Multiplayer System
+The game is designed to feel responsive and alive, even when multiple users interact at the same time.
 
--   Public matchmaking (auto-join rooms)
--   Private rooms with shareable links
--   Dynamic player join/leave handling
+---
 
-## Game Engine
+## Core features
 
--   Turn-based drawing system
--   Word selection with multiple options
--   Timer-based rounds and transitions
--   Scoring and leaderboard system
+### Multiplayer room system
 
-## Real-Time Sync
+- public and private room support
+- shared room-based gameplay experience
+- dynamic player join and leave handling
+- room-state synchronization across clients
 
--   WebSocket-based communication (Socket.IO)
--   Event-driven updates for all actions
--   Server-side state management
+### Game engine
 
-## Drawing System
+- round-based turn flow
+- word selection and drawing phase
+- score updates and win conditions
+- leaderboard progression
 
--   HTML5 Canvas-based drawing
--   Real-time stroke synchronization
--   Brush colors and sizes
+### Real-time interaction layer
 
-## Chat & Guessing
+- live drawing stroke propagation
+- chat and guess messaging
+- instant server-to-client updates
+- event-driven communication between clients and backend
 
--   Unified chat system for guesses and messages
--   Automatic correct guess detection
--   System notifications for events
+### User experience
 
-## Advanced Features
+- interactive canvas board
+- responsive room UI
+- real-time player presence updates
+- smooth transition between lobby, round, and results
 
--   Mid-game joining
--   Reconnection handling
--   Persistent session tracking
--   Optimized network communication
+---
 
-------------------------------------------------------------------------
+## System architecture
 
-# High-Level Architecture
+The system follows a layered architecture. The frontend handles interaction and visualization, while the backend owns the authoritative room and game state. Communication happens over WebSockets so the game feels live and synchronized.
 
-The system follows a **client-server model**:
+```mermaid
+flowchart TB
+    subgraph Client[Client Layer]
+        A[Player]
+        B[React + Vite UI]
+        C[Canvas Board]
+        D[Socket.IO Client]
+    end
 
--   **Frontend (React)** → UI + Canvas + Socket Client
--   **Backend (Node.js)** → Game Logic + Room Management
--   **WebSockets** → Real-time communication layer
+    subgraph Edge[Transport Layer]
+        E[HTTPS / WebSocket Connection]
+        F[Backend Server]
+    end
 
-------------------------------------------------------------------------
+    subgraph Server[Backend Runtime]
+        G[Express HTTP Server]
+        H[Socket.IO Server]
+        I[Room Manager]
+        J[Game Engine]
+        K[Chat & Guess Handler]
+        L[Room State Store]
+    end
 
-# Flow Chart
+    subgraph Scale[Future Scaling Layer]
+        M[In-Memory Room State]
+        N[Redis Pub/Sub for Shared State]
+        O[Load Balancer for Horizontal Scaling]
+    end
 
-## Mermaid
-
-``` mermaid
-graph TD;
-
-A[User Opens App] --> B[Enter Name];
-B --> C{Join Public or Private Room};
-
-C -->|Public| D[Matchmaking System];
-C -->|Private| E[Join via Room Code];
-
-D --> F[Waiting for Players];
-E --> F;
-
-F --> G{Players >= 2?};
-G -->|No| F;
-G -->|Yes| H[Game Starts];
-
-H --> I[Word Selection Phase];
-I --> J[Drawing Phase];
-
-J --> K[Players Send Guesses];
-K --> L{Correct Guess?};
-
-L -->|Yes| M[Update Scores];
-L -->|No| K;
-
-M --> N[Round Ends];
-N --> O{More Rounds?};
-
-O -->|Yes| I;
-O -->|No| P[Game Over];
-
-P --> Q[Show Leaderboard];
-Q --> F;
+    A --> B
+    B --> C
+    B --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    I --> K
+    J --> L
+    K --> L
+    L --> M
+    L -. planned evolution .-> N
+    N -. planned evolution .-> O
 ```
 
-------------------------------------------------------------------------
+### Architecture design notes
 
-#  WebSocket Architecture
+- The frontend is intentionally lightweight and focused on rendering and user interaction.
+- The backend is the authoritative layer for game rules, timing, and room state.
+- WebSocket events keep the experience consistent for all connected clients.
+- The current implementation uses a single backend runtime with in-memory room state.
+- For future growth, Redis pub/sub and load balancing can be introduced to support horizontal scaling and shared room coordination across multiple backend instances.
 
-## Room Events
+---
 
--   create_room → Create new room
--   join_room → Join existing room
--   player_joined / player_left → Sync players
+## Gameplay flow
 
-## Game Events
+The game flow is intentionally simple and easy to understand, while still supporting real-time coordination.
 
--   start_game → Start match
--   round_start → Begin round
--   word_chosen → Drawer selects word
--   round_end → End round
--   game_over → End game
+```mermaid
+flowchart TD
+    A[Open App] --> B[Enter Name]
+    B --> C[Create or Join Room]
+    C --> D[Room Lobby]
+    D --> E[Wait for Players]
+    E --> F[Start Match]
+    F --> G[Round Begins]
+    G --> H[Drawer Picks Word]
+    H --> I[Guessers Submit Guesses]
+    I --> J{Correct Guess?}
+    J -->|No| I
+    J -->|Yes| K[Round End and Score Update]
+    K --> L{More Rounds?}
+    L -->|Yes| G
+    L -->|No| M[Leaderboard and Game Summary]
+```
 
-## Drawing Events
+This flow keeps the game loop clear and easy to follow while still reflecting the real-time nature of the experience.
 
--   draw_start → Begin stroke
--   draw_move → Continue stroke
--   draw_end → End stroke
--   canvas_clear → Clear canvas
+---
 
-## Chat Events
+## How the stack works together
 
--   guess → Send guess
--   chat_message → Broadcast message
+### Frontend: React + Vite + Tailwind CSS
 
-------------------------------------------------------------------------
+React provides the component-based UI structure for the game pages, lobby, canvas experience, player list, and chat. It allows the interface to be broken into reusable pieces such as the canvas board, message box, room UI, and navbar.
 
-# System Design Concepts
+Vite is used for fast development and build tooling. It makes the local development loop quick and efficient, which is especially useful when iterating on a real-time interface.
 
-## Server as Source of Truth
+Tailwind CSS provides utility-first styling so the app can be styled quickly while staying maintainable. It helps create a modern UI without excessive custom CSS overhead.
 
-All game logic is executed on backend to prevent cheating and ensure
-consistency.
+### UI enhancement: Framer Motion
 
-## Event-Driven Architecture
+Framer Motion adds smooth animations and transitions to improve feel and interactivity. It helps make the app feel more alive when rooms change state, players join, or rounds transition.
 
-All actions (draw, guess, join) trigger events that update all clients.
+### Canvas interaction: HTML5 Canvas API
 
-## State Synchronization
+The drawing experience is implemented through the browser canvas. This is the right choice for a real-time drawing game because it offers low-level control over strokes, colors, and drawing operations while remaining efficient for frequent updates.
 
-Backend maintains state and broadcasts updates to all connected clients.
+### Transport layer: Socket.IO
 
-## Optimized Communication
+Socket.IO is the core of the real-time communication system. It enables bidirectional event-based communication between client and server, which is essential for:
 
-Only minimal drawing data (coordinates) is transmitted, not full canvas.
+- sending drawing strokes instantly
+- broadcasting chat and guess messages
+- synchronizing room actions
+- keeping all connected clients updated in near real time
 
-------------------------------------------------------------------------
+It abstracts the complexity of WebSocket handling while also providing reliability features for event delivery.
 
-# Project Structure
+### Backend runtime: Node.js + Express
 
-    DeluluDraw/
-    ├── Backend/
-    │   ├── src/
-    │   │   ├── core/
-    │   │   ├── socket/
-    │   │   ├── utils/
-    │   │   └── index.js
-    │   └── package.json
-    │
-    ├── Frontend/
-    │   ├── src/
-    │   │   ├── components/
-    │   │   ├── pages/
-    │   │   ├── hooks/
-    │   │   └── App.jsx
-    │   └── package.json
-    │
-    └── README.md
+Node.js is used because the application is highly event-driven and benefits from non-blocking I/O. This is ideal for a system that must handle many concurrent connections and frequent updates.
 
-------------------------------------------------------------------------
+Express provides the HTTP server foundation and can manage routes, middleware, and structured request handling. In this project, it works alongside Socket.IO to support the game service as a unified backend application.
 
-# Tech Stack
+### State model: server-authoritative architecture
 
-  Layer        Technology
-  ------------ ---------------------------
-  Frontend     React, Vite, Tailwind CSS
-  Backend      Node.js, Express
-  Real-Time    Socket.IO (WebSockets)
-  Canvas       HTML5 Canvas API
-  Deployment   Vercel, Render
+The backend acts as the source of truth for the game. This approach is important because a multiplayer game must avoid each client independently deciding room or scoring state. Instead:
 
-------------------------------------------------------------------------
+- the server receives events
+- validates them
+- updates the game state
+- broadcasts the resulting state to all players
 
-# Setup Instructions
+This keeps the experience consistent and fair.
 
-## Backend
+### Future scale layer: Redis + load balancing
 
-``` bash
+The current version runs as a single backend process with in-memory state. For larger-scale deployment, the architecture can evolve into a horizontally scaled setup where:
+
+- multiple backend instances serve different users
+- Redis stores shared room and game state
+- a load balancer distributes incoming socket traffic
+- pub/sub events keep rooms synchronized across instances
+
+This is the natural next step for turning the project into a production-grade real-time multiplayer service.
+
+---
+
+## Backend responsibilities
+
+The backend is responsible for the logic and consistency of the game. It manages:
+
+- room lifecycle and player presence
+- room creation, joining, and leaving
+- timing and round transitions
+- word selection and score updates
+- chat and guess events
+- drawing event broadcasting
+- room state synchronization across all clients
+
+This ensures that all players see the same state at the same time.
+
+---
+
+## Frontend responsibilities
+
+The frontend is responsible for the user-facing experience. It handles:
+
+- lobby and room views
+- player list and leaderboard UI
+- canvas-based drawing input
+- chat message display
+- real-time updates from the server
+- local interaction feedback and animations
+
+The frontend is designed to stay focused on experience while the backend manages the truth of the gameplay.
+
+---
+
+## Project structure
+
+```text
+DeluluDraw/
+├── Backend/
+│   ├── src/
+│   │   ├── constants/
+│   │   ├── core/
+│   │   ├── data/
+│   │   ├── socket/
+│   │   ├── store/
+│   │   ├── utils/
+│   │   └── index.js
+│   └── package.json
+│
+├── Frontend/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── main.jsx
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## Setup instructions
+
+### 1. Backend
+
+```bash
 cd Backend
 npm install
 npm run dev
 ```
 
-## Frontend
+### 2. Frontend
 
-``` bash
+```bash
 cd Frontend
 npm install
 npm run dev
 ```
 
-------------------------------------------------------------------------
+### 3. Environment variables
 
-# Environment Variables
+Backend example:
 
-## Backend
-
-PORT=4000\
+```env
+PORT=4000
 CLIENT_URL=http://localhost:5173
+```
 
-## Frontend
+Frontend example:
 
+```env
 VITE_SERVER_URL=http://localhost:4000
+```
 
-------------------------------------------------------------------------
+---
 
-# Deployment
+## Development principles used in this project
 
--   **Frontend:** Vercel
--   **Backend:** Render
+This project was built around a few strong engineering principles:
 
-Live URL: https://delulu-draw.vercel.app/
+- event-driven architecture for highly interactive systems
+- clear separation of concerns between UI and game logic
+- real-time synchronization over persistent connections
+- low-overhead communication for drawing and chat events
+- modularity so new features can be added without reworking the whole system
 
-------------------------------------------------------------------------
+---
 
-# Key Learnings
+## Future roadmap
 
--   Building real-time systems using WebSockets
--   Managing distributed state across clients
--   Designing scalable backend architectures
--   Optimizing real-time data transfer
--   Handling reconnection and edge cases
+The next version of DeluluDraw can grow into a more advanced social and scalable multiplayer platform.
 
-------------------------------------------------------------------------
+### Scalability and infrastructure
 
-# Future Improvements
+- horizontal scaling with multiple backend instances
+- Redis-backed shared room state and pub/sub synchronization
+- load balancer integration for socket distribution
+- session affinity and connection routing optimization
+- distributed matchmaking and room orchestration
 
--   AI-based drawing hints
--   Mobile responsiveness improvements
--   Replay system
--   Database integration for persistence
--   Authentication system
+### Social and multiplayer enhancements
 
-------------------------------------------------------------------------
+- friend invites and private friend lobbies
+- room joining by code or direct invitation links
+- spectator mode
+- replay and match-history support
+- team-based and tournament-style modes
 
-# Conclusion
+### Product and experience upgrades
 
-DeluluDraw demonstrates a complete real-time multiplayer system with
-scalable architecture, efficient communication, and robust game logic,
-showcasing strong full-stack and system design skills.
+- authentication and user profiles
+- persistent stats and global leaderboards
+- AI-assisted drawing hints
+- mobile-first usability improvements
+- stronger reconnect and recovery systems
+
+---
+
+## Conclusion
+
+DeluluDraw is a practical and well-structured example of a real-time multiplayer system built with modern web technologies. It combines engaging gameplay with thoughtful architecture, and it provides a strong foundation for future growth into a larger, more scalable, and more social online game platform.
+
