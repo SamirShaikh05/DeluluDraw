@@ -20,7 +20,7 @@ function registerGameHandlers(io, socket) {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
     if (!room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Public matches start automatically." });
-    if (room.hostId !== socket.id) return socket.emit(EVENTS.ERROR, { message: "Only the host can start." });
+    if (room.hostId !== socket.data.playerId) return socket.emit(EVENTS.ERROR, { message: "Only the host can start." });
     if (!startGame(io, room)) {
       socket.emit(EVENTS.ERROR, { message: `Need at least ${MIN_PLAYERS_TO_START} players to start.` });
     }
@@ -28,7 +28,7 @@ function registerGameHandlers(io, socket) {
 
   socket.on(EVENTS.WORD_CHOSEN, ({ roomId, word } = {}) => {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
-    if (!room || !chooseWord(io, room, socket.id, word)) {
+    if (!room || !chooseWord(io, room, socket.data.playerId, word)) {
       socket.emit(EVENTS.ERROR, { message: "That word cannot be chosen now." });
     }
   });
@@ -86,7 +86,7 @@ function beginChoosing(io, room) {
     type: "system",
     text: `${drawer.name} is choosing a word.`,
   });
-  io.to(drawer.id).emit(EVENTS.CHOOSE_WORD, { wordOptions: game.wordOptions });
+  if (drawer.socketId) io.to(drawer.socketId).emit(EVENTS.CHOOSE_WORD, { wordOptions: game.wordOptions });
   emitRoomState(io, room);
 
   game.tickRef = setInterval(() => {

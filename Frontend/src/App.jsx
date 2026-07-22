@@ -9,7 +9,7 @@ import { Lobby } from "./pages/Lobby";
 import { DEFAULT_SETTINGS } from "./utils/constants";
 
 function App() {
-  const { connected, myId, ping, socketRef } = useSocket();
+  const { connected, playerId, ping, socketRef } = useSocket();
   const {
     messages,
     notice,
@@ -20,11 +20,15 @@ function App() {
     sortedPlayers,
     wordOptions,
     setWordOptions,
+    rejoinSession,
+    rejoinRoom,
+    quitRejoinSession,
   } = useGameState(socketRef);
 
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [settings] = useState(DEFAULT_SETTINGS);
+  const myId = playerId;
 
   const game = room?.game;
   const me = players.find((player) => player.id === myId);
@@ -68,6 +72,10 @@ function App() {
 
   function sendGuess(text) {
     socketRef.current?.emit("guess", { roomId: room?.roomId, text });
+  }
+
+  function quitRoom() {
+    socketRef.current?.emit("quit_room", { roomId: room?.roomId });
   }
 
   return (
@@ -117,7 +125,28 @@ function App() {
           socketRef={socketRef}
           wordOptions={wordOptions}
           chooseWord={chooseWord}
+          onQuitRoom={quitRoom}
         />
+      )}
+
+      {rejoinSession && !room && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#061731]/75 px-4">
+          <div className="w-full max-w-md rounded-xl border-4 border-[#0c3579] bg-white p-6 text-[#172033] shadow-2xl">
+            <p className="text-sm font-black uppercase tracking-wider text-[#2563eb]">Session found</p>
+            <h2 className="mt-2 text-2xl font-black">You were in room {rejoinSession.roomId}</h2>
+            <p className="mt-3 font-semibold text-gray-600">
+              Rejoin as {rejoinSession.playerName}? Your score and game position are still saved.
+            </p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <button className="rounded-lg bg-[#58df28] px-4 py-3 font-black text-white hover:bg-[#4ade80]" onClick={rejoinRoom} type="button">
+                Rejoin
+              </button>
+              <button className="rounded-lg bg-[#e5e7eb] px-4 py-3 font-black text-[#172033] hover:bg-[#d1d5db]" onClick={quitRejoinSession} type="button">
+                Quit
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

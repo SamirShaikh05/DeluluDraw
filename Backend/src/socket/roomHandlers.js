@@ -5,14 +5,16 @@ const Room = require("../core/Room");
 const rooms = require("../store/rooms");
 const { emitRoomState } = require("../utils/broadcast");
 const { addMessage } = require("../utils/messages");
-const { getDrawer } = require("../utils/roomState");
+const { getDrawer, getPlayerForSocket } = require("../utils/roomState");
 const { publicPlayer } = require("../utils/serializers");
 const { clearTimers } = require("../utils/timers");
 const { normalizeSettings, sanitizeName, sanitizeText } = require("../utils/validators");
 const { beginChoosing, endRound, resetRoomToWaiting, startGame } = require("./gameHandlers");
 const { customAlphabet } = require("nanoid");
+const { randomUUID } = require("crypto");
 
 const createRoomId = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 5);
+const DISCONNECT_GRACE_MS = 30000;
 
 function createUniqueRoomId() {
   let id = createRoomId();
@@ -21,12 +23,39 @@ function createUniqueRoomId() {
 }
 
 function registerRoomHandlers(io, socket) {
+  socket.on(EVENTS.SESSION_READY, () => sendRejoinAvailability(socket));
+
+  socket.on(EVENTS.REJOIN_ROOM, ({ roomId } = {}) => {
+    const room = rooms[sanitizeText(roomId).toUpperCase()];
+    const player = room?.players.find((candidate) => candidate.id === socket.data.playerId);
+    if (!room || !player) {
+      return socket.emit(EVENTS.ERROR, { message: "That game session is no longer available." });
+    }
+
+    if (player.disconnectTimer) clearTimeout(player.disconnectTimer);
+    player.disconnectTimer = null;
+    player.socketId = socket.id;
+    player.isConnected = true;
+    socket.join(room.id);
+    socket.emit(EVENTS.ROOM_REJOINED, { roomId: room.id, player: publicPlayer(player), hostId: room.hostId });
+    emitRoomState(io, room);
+  });
+
+  socket.on(EVENTS.QUIT_ROOM, ({ roomId } = {}) => {
+    const room = rooms[sanitizeText(roomId).toUpperCase()];
+    const player = room?.players.find((candidate) => candidate.id === socket.data.playerId);
+    if (!room || !player) return;
+    socket.emit(EVENTS.ROOM_LEFT);
+    removePlayerFromRoom(io, room, player.id, { reason: `${player.name} left the room.` });
+  });
+
   socket.on(EVENTS.CREATE_ROOM, ({ playerName, settings } = {}) => {
     const name = sanitizeName(playerName);
     if (!name) return socket.emit(EVENTS.ERROR, { message: "Enter a name first." });
 
     const roomId = createUniqueRoomId();
-    const player = new Player(socket.id, name);
+    const player = new Player(socket.data.playerId || randomUUID(), name, socket.id);
+    socket.data.playerId = player.id;
     const room = new Room(roomId, player, normalizeSettings(settings), { isPrivate: true });
     rooms[roomId] = room;
 
@@ -41,7 +70,7 @@ function registerRoomHandlers(io, socket) {
     const room = rooms[id];
     if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
     if (!room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Public match settings are fixed." });
-    if (room.hostId !== socket.id) return socket.emit(EVENTS.ERROR, { message: "Only the host can change room settings." });
+    if (room.hostId !== socket.data.playerId) return socket.emit(EVENTS.ERROR, { message: "Only the host can change room settings." });
     if (room.game) return socket.emit(EVENTS.ERROR, { message: "Can't change settings after the game starts." });
 
     room.settings = normalizeSettings({
@@ -57,15 +86,15 @@ function registerRoomHandlers(io, socket) {
     if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
     if (room.isPrivate) return socket.emit(EVENTS.ERROR, { message: "Kick voting is only available in public matches." });
     if (room.players.length < 3) return socket.emit(EVENTS.ERROR, { message: "Kick voting needs at least 3 players." });
-    if (socket.id === targetId) return socket.emit(EVENTS.ERROR, { message: "You can't vote to kick yourself." });
+    if (socket.data.playerId === targetId) return socket.emit(EVENTS.ERROR, { message: "You can't vote to kick yourself." });
 
-    const voter = room.players.find((player) => player.id === socket.id);
+    const voter = getPlayerForSocket(room, socket.id);
     const target = room.players.find((player) => player.id === targetId);
     if (!voter || !target) return socket.emit(EVENTS.ERROR, { message: "Player not found in this match." });
 
     const votes = room.kickVotes[targetId] || new Set();
-    if (votes.has(socket.id)) {
-      votes.delete(socket.id);
+    if (votes.has(socket.data.playerId)) {
+      votes.delete(socket.data.playerId);
       if (votes.size === 0) {
         delete room.kickVotes[targetId];
       } else {
@@ -75,7 +104,7 @@ function registerRoomHandlers(io, socket) {
       return;
     }
 
-    votes.add(socket.id);
+    votes.add(socket.data.playerId);
     room.kickVotes[targetId] = votes;
 
     const requiredVotes = Math.floor(room.players.length / 2) + 1;
@@ -108,7 +137,8 @@ function registerRoomHandlers(io, socket) {
       return socket.emit(EVENTS.ERROR, { message: "That room is full." });
     }
 
-    const player = new Player(socket.id, name);
+    const player = new Player(socket.data.playerId || randomUUID(), name, socket.id);
+    socket.data.playerId = player.id;
     room.addPlayer(player);
     socket.join(room.id);
     socket.emit(EVENTS.ROOM_JOINED, { roomId: room.id, player: publicPlayer(player), hostId: room.hostId });
@@ -126,17 +156,43 @@ function registerRoomHandlers(io, socket) {
   });
 
   socket.on(EVENTS.DISCONNECT, () => {
-    removePlayerFromRooms(io, socket);
+    markPlayerDisconnected(io, socket);
   });
+
+  sendRejoinAvailability(socket);
 }
 
-function removePlayerFromRooms(io, socket) {
+function sendRejoinAvailability(socket) {
+  const sessions = Object.values(rooms)
+    .map((room) => {
+      const player = room.players.find((candidate) => candidate.id === socket.data.playerId);
+      if (!player) return null;
+      return {
+        roomId: room.id,
+        playerName: player.name,
+        playerCount: room.players.length,
+        phase: room.game?.phase || "lobby",
+      };
+    })
+    .filter(Boolean);
+  if (sessions.length) socket.emit(EVENTS.REJOIN_AVAILABLE, sessions);
+}
+
+function markPlayerDisconnected(io, socket) {
   for (const room of Object.values(rooms)) {
-    removePlayerFromRoom(io, room, socket.id, {
-      reason: null,
-      notice: null,
-      kicked: false,
-    });
+    const player = getPlayerForSocket(room, socket.id);
+    if (!player) continue;
+    player.isConnected = false;
+    player.socketId = null;
+    player.disconnectTimer = setTimeout(() => {
+      const currentPlayer = room.players.find((candidate) => candidate.id === player.id);
+      if (currentPlayer && !currentPlayer.isConnected) {
+        removePlayerFromRoom(io, room, player.id, {
+          reason: `${player.name} left the room after disconnecting.`,
+        });
+      }
+    }, DISCONNECT_GRACE_MS);
+    emitRoomState(io, room);
   }
 }
 
@@ -145,10 +201,11 @@ function removePlayerFromRoom(io, room, playerId, options = {}) {
   if (!player) return false;
 
   const wasDrawer = room.game && getDrawer(room)?.id === playerId;
+  if (player.disconnectTimer) clearTimeout(player.disconnectTimer);
   room.removePlayer(playerId);
   clearKickVotes(room, playerId);
 
-  const playerSocket = io.sockets.sockets.get(playerId);
+  const playerSocket = player.socketId ? io.sockets.sockets.get(player.socketId) : null;
   playerSocket?.leave(room.id);
   if (options.kicked) {
     playerSocket?.emit(EVENTS.KICKED_FROM_ROOM, { message: options.notice || "You were removed from the match." });

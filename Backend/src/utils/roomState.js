@@ -9,6 +9,11 @@ function getDrawer(room) {
   return room.players[index];
 }
 
+function getPlayerForSocket(room, socketId) {
+  return room?.players.find((player) => player.socketId === socketId) || null;
+}
+
 module.exports = {
   getDrawer,
+  getPlayerForSocket,
 };

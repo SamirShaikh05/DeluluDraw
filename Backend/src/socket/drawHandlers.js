@@ -12,8 +12,8 @@ function registerDrawHandlers(io, socket) {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     if (!room) return;
 
-    const drawer = getDrawer(room);
-    if (drawer?.id !== socket.id || room.game?.phase !== "drawing") return;
+  const drawer = getDrawer(room);
+  if (drawer?.socketId !== socket.id || room.game?.phase !== "drawing") return;
     io.to(room.id).emit(EVENTS.CANVAS_CLEAR);
   });
 }
@@ -23,7 +23,7 @@ function relayDraw(socket, type, payload) {
   if (!room || room.game?.phase !== "drawing") return;
 
   const drawer = getDrawer(room);
-  if (drawer?.id !== socket.id) return;
+  if (drawer?.socketId !== socket.id) return;
 
   const data = {
     type,

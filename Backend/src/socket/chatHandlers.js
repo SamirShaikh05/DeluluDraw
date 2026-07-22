@@ -1,7 +1,7 @@
 const EVENTS = require("../constants/events");
 const rooms = require("../store/rooms");
 const { addMessage } = require("../utils/messages");
-const { getDrawer } = require("../utils/roomState");
+const { getDrawer, getPlayerForSocket } = require("../utils/roomState");
 const { normalizeWord, sanitizeText } = require("../utils/validators");
 const { handleCorrectGuess } = require("./gameHandlers");
 
@@ -10,7 +10,7 @@ function registerChatHandlers(io, socket) {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     if (!room) return socket.emit(EVENTS.ERROR, { message: "Room not found." });
 
-    const player = room.players.find((candidate) => candidate.id === socket.id);
+    const player = getPlayerForSocket(room, socket.id);
     const drawer = getDrawer(room);
     const game = room.game;
     const cleanText = sanitizeText(text);
@@ -24,7 +24,7 @@ function registerChatHandlers(io, socket) {
         playerName: player.name,
       });
     }
-    if (drawer?.id === socket.id) return socket.emit(EVENTS.ERROR, { message: "The drawer cannot guess." });
+    if (drawer?.id === player.id) return socket.emit(EVENTS.ERROR, { message: "The drawer cannot guess." });
     if (player.hasGuessed) return socket.emit(EVENTS.ERROR, { message: "You already guessed it." });
 
     if (normalizeWord(cleanText) === game.currentWord) {

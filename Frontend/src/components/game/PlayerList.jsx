@@ -56,6 +56,9 @@ export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote,
                   <>
                     <p className="truncate text-xs font-bold text-[#153e91] leading-tight">
                       {player.name}
+                      {!player.isConnected && (
+                        <span className="ml-1 text-[9px] font-black uppercase text-red-500">offline</span>
+                      )}
                       {player.id === hostId && (
                         <span className="ml-0.5 text-[#d97706]">★</span>
                       )}

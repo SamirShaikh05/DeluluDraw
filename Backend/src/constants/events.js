@@ -2,6 +2,13 @@ const EVENTS = {
   CONNECTION: "connection",
   DISCONNECT: "disconnect",
   ERROR: "error",
+  REJOIN_AVAILABLE: "rejoin_available",
+  REJOIN_ROOM: "rejoin_room",
+  ROOM_REJOINED: "room_rejoined",
+  QUIT_ROOM: "quit_room",
+  ROOM_LEFT: "room_left",
+  SESSION_EXPIRED: "session_expired",
+  SESSION_READY: "session_ready",
   PING: "PING",
   PONG: "PONG",
 

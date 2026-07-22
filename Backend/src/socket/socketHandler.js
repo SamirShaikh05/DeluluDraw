@@ -6,6 +6,7 @@ const { registerRoomHandlers } = require("./roomHandlers");
 
 function registerSocketHandlers(io) {
   io.on(EVENTS.CONNECTION, (socket) => {
+    socket.data.playerId = socket.handshake.auth?.playerId || "";
     socket.on(EVENTS.PING, ({ timestamp } = {}) => {
       socket.emit(EVENTS.PONG, { timestamp });
     });

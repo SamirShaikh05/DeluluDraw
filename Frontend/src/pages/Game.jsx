@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { IoMdSettings } from "react-icons/io";
 import { FaWifi } from "react-icons/fa";
+import { FiMenu } from "react-icons/fi";
 import { CanvasBoard } from "../components/game/CanvasBoard";
 import { ChatBox } from "../components/game/ChatBox";
 import { PlayerList } from "../components/game/PlayerList";
@@ -17,6 +17,7 @@ export function Game({
   messages,
   myId,
   onKickVote,
+  onQuitRoom,
   players,
   ping,
   room,
@@ -26,6 +27,8 @@ export function Game({
 }) {
   const [color, setColor] = useState("#111827");
   const [size, setSize] = useState(7);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const showKickVotes = !room.isPrivate && players.length >= 3;
 
   const getPingBadgeStyles = (pingValue) => {
@@ -40,7 +43,7 @@ export function Game({
       {/* Top Header Row */}
       <div className="grid gap-3 rounded-t-[7px] border-[3px] border-[#0c3579] bg-white p-2.5 md:grid-cols-[1fr_auto_1fr] md:items-center">
         <div className="flex items-center justify-start">
-          <div className="grid h-12 w-12 place-items-center rounded-full border-[4px] border-[#111827] bg-white font-black text-[#111827]">
+          <div className="grid h-12 w-12 place-items-center rounded-full border-4 border-[#111827] bg-white font-black text-[#111827]">
             <span>{game?.remaining ?? 0}</span>
           </div>
         </div>
@@ -59,15 +62,54 @@ export function Game({
             <span>{ping === null ? "--" : `${ping} ms`}</span>
           </div>
 
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-[#0c3579] bg-[#111827] text-white transition hover:bg-[#0a2a61] focus:outline-none focus:ring-2 focus:ring-[#0c3579]/60"
-            aria-label="Open settings"
-          >
-            <IoMdSettings className="h-5 w-5" />
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-[#0c3579] bg-[#111827] text-white transition hover:bg-[#0a2a61] focus:outline-none focus:ring-2 focus:ring-[#0c3579]/60"
+              aria-label="Open game menu"
+              aria-expanded={showMenu}
+              onClick={() => setShowMenu((current) => !current)}
+            >
+              <FiMenu className="h-5 w-5" />
+            </button>
+
+            {showMenu && (
+              <div className="absolute right-0 top-full z-20 mt-2 w-44 rounded-xl border-2 border-[#0c3579] bg-white p-2 shadow-xl">
+                <button
+                  type="button"
+                  className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-black text-[#172033] transition hover:bg-gray-100"
+                  onClick={() => setShowMenu(false)}
+                >
+                  Settings
+                </button>
+                <button
+                  type="button"
+                  className="mt-1 flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-black text-red-600 transition hover:bg-red-50"
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowLeaveConfirm(true);
+                  }}
+                >
+                  Leave game
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {showLeaveConfirm && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#061731]/75 px-4">
+          <div className="w-full max-w-sm rounded-xl border-4 border-[#0c3579] bg-white p-6 text-[#172033] shadow-2xl">
+            <h2 className="text-xl font-black">Leave this game?</h2>
+            <p className="mt-2 font-semibold text-gray-600">You will be removed immediately and can’t rejoin this session.</p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <button className="rounded-lg bg-gray-200 px-4 py-3 font-black hover:bg-gray-300" onClick={() => setShowLeaveConfirm(false)} type="button">Stay</button>
+              <button className="rounded-lg bg-red-600 px-4 py-3 font-black text-white hover:bg-red-700" onClick={onQuitRoom} type="button">Leave game</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FIXED: changed items-start to items-stretch */}
       <div className="grid grid-cols-1 items-stretch gap-0 md:grid-cols-[220px_minmax(0,1fr)_266px]">
