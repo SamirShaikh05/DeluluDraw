@@ -145,6 +145,37 @@ function registerRoomHandlers(io, socket) {
       if (role !== "spectator") return socket.emit(EVENTS.ERROR, { message: "That room is full." });
     }
 
+    const existingPlayer = room.players.find((candidate) => candidate.id === socket.data.playerId);
+    const existingSpectator = room.spectators.find((candidate) => candidate.id === socket.data.playerId);
+
+    if (existingPlayer) {
+      if (existingPlayer.disconnectTimer) clearTimeout(existingPlayer.disconnectTimer);
+      existingPlayer.disconnectTimer = null;
+      existingPlayer.name = name;
+      existingPlayer.socketId = socket.id;
+      existingPlayer.isConnected = true;
+      existingPlayer.isSpectator = false;
+      socket.data.playerId = existingPlayer.id;
+      socket.join(room.id);
+      socket.emit(EVENTS.ROOM_JOINED, { roomId: room.id, player: publicPlayer(existingPlayer), hostId: room.hostId });
+      emitRoomState(io, room);
+      return;
+    }
+
+    if (existingSpectator) {
+      if (existingSpectator.disconnectTimer) clearTimeout(existingSpectator.disconnectTimer);
+      existingSpectator.disconnectTimer = null;
+      existingSpectator.name = name;
+      existingSpectator.socketId = socket.id;
+      existingSpectator.isConnected = true;
+      existingSpectator.isSpectator = true;
+      socket.data.playerId = existingSpectator.id;
+      socket.join(room.id);
+      socket.emit(EVENTS.ROOM_JOINED, { roomId: room.id, player: publicPlayer(existingSpectator), hostId: room.hostId });
+      emitRoomState(io, room);
+      return;
+    }
+
     const player = new Player(socket.data.playerId || randomUUID(), name, socket.id, { isSpectator: role === "spectator" });
     socket.data.playerId = player.id;
     if (player.isSpectator) room.addSpectator(player);

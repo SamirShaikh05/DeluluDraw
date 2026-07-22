@@ -43,14 +43,14 @@ export function Game({
   return (
     <section className="game-page mx-auto mb-7 mt-3 w-[min(100%-24px,1170px)]">
       {/* Top Header Row */}
-      <div className="grid gap-3 rounded-t-[7px] border-[3px] border-[#0c3579] bg-white p-2.5 md:grid-cols-[1fr_auto_1fr] md:items-center">
+      <div className="game-header grid gap-3 rounded-t-[7px] border-[3px] border-[#0c3579] bg-white p-2.5 md:grid-cols-[1fr_auto_1fr] md:items-center">
         <div className="flex items-center justify-start">
           <div className="grid h-12 w-12 place-items-center rounded-full border-4 border-[#111827] bg-white font-black text-[#111827]">
             <span>{game?.remaining ?? 0}</span>
           </div>
         </div>
 
-        <div className="flex justify-center">
+        <div className="min-w-0 flex justify-center">
           <WordDisplay game={game} isDrawer={isDrawer} totalRounds={room.settings.rounds} />
         </div>
 

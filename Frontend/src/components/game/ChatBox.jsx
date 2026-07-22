@@ -6,6 +6,7 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
   const [text, setText] = useState("");
   const scrollRef = useRef(null);
   const previousMessageCountRef = useRef(null);
+  const lastMessageId = messages[messages.length - 1]?.id;
 
   useEffect(() => {
     const currentMessageCount = messages.length;
@@ -27,7 +28,7 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
     }
 
     previousMessageCountRef.current = currentMessageCount;
-  }, [messages.length, messages[messages.length - 1]?.id]);
+  }, [messages.length, lastMessageId]);
 
   function submit(event) {
     event.preventDefault();

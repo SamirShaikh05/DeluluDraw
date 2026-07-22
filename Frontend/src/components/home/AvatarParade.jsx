@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { MiniAvatar } from "../ui/MiniAvatar";
 import { PALETTE } from "../../utils/constants";
 
 export function AvatarParade() {
   return (
-    <motion.div
+    <Motion.div
       className="mt-2 flex justify-center gap-1.5"
       initial="hidden"
       animate="visible"
@@ -20,7 +20,7 @@ export function AvatarParade() {
       }}
     >
       {PALETTE.slice(1).map((color, index) => (
-        <motion.div
+        <Motion.div
           key={color}
           variants={{
             hidden: { y: 20, opacity: 0, scale: 0.8 },
@@ -30,8 +30,8 @@ export function AvatarParade() {
           whileHover={{ scale: 1.2, rotate: 10 }}
         >
           <MiniAvatar color={color} />
-        </motion.div>
+        </Motion.div>
       ))}
-    </motion.div>
+    </Motion.div>
   );
 }
