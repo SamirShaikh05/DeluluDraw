@@ -24,6 +24,8 @@ export function Game({
   sendGuess,
   socketRef,
   wordOptions,
+  spectators = [],
+  isSpectator = false,
 }) {
   const [color, setColor] = useState("#111827");
   const [size, setSize] = useState(7);
@@ -121,13 +123,14 @@ export function Game({
           kickVotes={room.kickVotes}
           onKickVote={onKickVote}
           showKickVotes={showKickVotes}
+          spectators={spectators}
         />
         <div className="relative flex flex-col justify-between min-w-0 border-b-[3px] border-[#0c3579] bg-white">
           <WordPicker chooseWord={chooseWord} game={game} isDrawer={isDrawer} players={players} wordOptions={wordOptions} />
-          <CanvasBoard socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && game?.phase === "drawing"} color={color} size={size} />
-          <Toolbar color={color} setColor={setColor} size={size} setSize={setSize} socketRef={socketRef} roomId={room.roomId} enabled={isDrawer} />
+          <CanvasBoard socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && game?.phase === "drawing"} color={color} size={size} initialStrokes={room.canvas || []} />
+          <Toolbar color={color} setColor={setColor} size={size} setSize={setSize} socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && !isSpectator} />
         </div>
-        <ChatBox messages={messages} sendGuess={sendGuess} disabled={isDrawer || game?.phase !== "drawing" || me?.hasGuessed} drawer={drawer} />
+        <ChatBox messages={messages} sendGuess={sendGuess} disabled={isSpectator || isDrawer || game?.phase !== "drawing" || me?.hasGuessed} drawer={drawer} />
       </div>
     </section>
   );

@@ -13,7 +13,13 @@ function getPlayerForSocket(room, socketId) {
   return room?.players.find((player) => player.socketId === socketId) || null;
 }
 
+function getMemberForSocket(room, socketId) {
+  return [...(room?.players || []), ...(room?.spectators || [])]
+    .find((member) => member.socketId === socketId) || null;
+}
+
 module.exports = {
   getDrawer,
   getPlayerForSocket,
+  getMemberForSocket,
 };

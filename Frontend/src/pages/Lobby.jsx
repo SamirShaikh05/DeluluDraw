@@ -104,6 +104,7 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
         kickVotes={room.kickVotes}
         onKickVote={onKickVote}
         showKickVotes={showKickVotes}
+        spectators={room.spectators || []}
       />
     </section>
   );

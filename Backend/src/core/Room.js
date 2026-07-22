@@ -4,15 +4,21 @@ class Room {
     this.isPrivate = options.isPrivate ?? true;
     this.hostId = hostPlayer?.id || "";
     this.players = hostPlayer ? [hostPlayer] : [];
+    this.spectators = [];
     this.chat = [];
     this.settings = settings;
     this.game = null;
     this.kickVotes = {};
+    this.canvas = [];
   }
 
   addPlayer(player) {
     this.players.push(player);
     if (!this.hostId) this.hostId = player.id;
+  }
+
+  addSpectator(spectator) {
+    this.spectators.push(spectator);
   }
 
   removePlayer(playerId) {
@@ -26,8 +32,14 @@ class Room {
     return player;
   }
 
+  removeSpectator(spectatorId) {
+    const spectatorIndex = this.spectators.findIndex((spectator) => spectator.id === spectatorId);
+    if (spectatorIndex === -1) return null;
+    return this.spectators.splice(spectatorIndex, 1)[0];
+  }
+
   isEmpty() {
-    return this.players.length === 0;
+    return this.players.length === 0 && this.spectators.length === 0;
   }
 }
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
-export function useCanvas({ color, enabled, roomId, size, socketRef }) {
+export function useCanvas({ color, enabled, roomId, size, socketRef, initialStrokes = [] }) {
   const canvasRef = useRef(null);
   const drawingRef = useRef(false);
   const lastPointRef = useRef(null);
@@ -58,6 +58,15 @@ export function useCanvas({ color, enabled, roomId, size, socketRef }) {
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
   }, []);
+
+  useEffect(() => {
+    if (!canvasRef.current || !initialStrokes.length) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lastPointRef.current = null;
+    initialStrokes.forEach((stroke) => drawStroke(stroke, false));
+  }, [drawStroke, initialStrokes]);
 
   useEffect(() => {
     const socket = socketRef.current;

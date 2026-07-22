@@ -10,6 +10,9 @@ export function Home({
   roomCode,
   setPlayerName,
   setRoomCode,
+  joinChoiceOpen,
+  setJoinChoiceOpen,
+  joinAs,
 }) {
   return (
     <section className="relative z-10 flex flex-col items-center px-4 pb-20 pt-8 sm:px-6">
@@ -227,6 +230,19 @@ export function Home({
           >
             {notice}
           </motion.p>
+        )}
+        {joinChoiceOpen && (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-[#061731]/75 px-4">
+            <div className="w-full max-w-sm rounded-xl border-4 border-[#0c3579] bg-white p-6 text-[#172033] shadow-2xl">
+              <h2 className="text-2xl font-black">Join {roomCode.trim()}</h2>
+              <p className="mt-2 font-semibold text-gray-600">Choose how you want to enter this custom room.</p>
+              <div className="mt-6 grid gap-3">
+                <button className="rounded-lg bg-[#58df28] px-4 py-3 font-black text-white hover:bg-[#4ade80]" onClick={() => joinAs("player")} type="button">Play in the room</button>
+                <button className="rounded-lg bg-[#2f97e8] px-4 py-3 font-black text-white hover:bg-[#3b82f6]" onClick={() => joinAs("spectator")} type="button">Watch as spectator</button>
+                <button className="rounded-lg bg-gray-200 px-4 py-3 font-black hover:bg-gray-300" onClick={() => setJoinChoiceOpen(false)} type="button">Cancel</button>
+              </div>
+            </div>
+          </div>
         )}
       </motion.div>
 

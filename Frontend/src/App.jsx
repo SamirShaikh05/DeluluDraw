@@ -27,6 +27,7 @@ function App() {
 
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const [joinChoiceOpen, setJoinChoiceOpen] = useState(false);
   const [settings] = useState(DEFAULT_SETTINGS);
   const myId = playerId;
 
@@ -44,9 +45,22 @@ function App() {
   }
 
   function joinRoom() {
+    if (roomCode.trim()) {
+      setJoinChoiceOpen(true);
+      return;
+    }
     socketRef.current?.emit("join_room", {
       playerName,
       roomId: roomCode.trim(),
+    });
+  }
+
+  function joinAs(role) {
+    setJoinChoiceOpen(false);
+    socketRef.current?.emit("join_room", {
+      playerName,
+      roomId: roomCode.trim(),
+      role,
     });
   }
 
@@ -92,6 +106,9 @@ function App() {
           createRoom={createRoom}
           joinRoom={joinRoom}
           notice={notice}
+          joinChoiceOpen={joinChoiceOpen}
+          setJoinChoiceOpen={setJoinChoiceOpen}
+          joinAs={joinAs}
         />
       )}
 
@@ -114,6 +131,7 @@ function App() {
           room={room}
           game={game}
           players={sortedPlayers}
+          spectators={room.spectators || []}
           ping={ping}
           me={me}
           myId={myId}
@@ -124,6 +142,7 @@ function App() {
           sendGuess={sendGuess}
           socketRef={socketRef}
           wordOptions={wordOptions}
+          isSpectator={room.isSpectator}
           chooseWord={chooseWord}
           onQuitRoom={quitRoom}
         />

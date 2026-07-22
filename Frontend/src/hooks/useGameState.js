@@ -118,6 +118,7 @@ export function useGameState(socketRef) {
   }, [socketRef]);
 
   const players = useMemo(() => room?.players || [], [room?.players]);
+  const spectators = useMemo(() => room?.spectators || [], [room?.spectators]);
   const sortedPlayers = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players]);
 
   function rejoinRoom() {
@@ -138,6 +139,7 @@ export function useGameState(socketRef) {
     messages,
     notice,
     players,
+    spectators,
     room,
     screen,
     setNotice,

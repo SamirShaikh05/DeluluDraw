@@ -44,9 +44,11 @@ function registerRoomHandlers(io, socket) {
   socket.on(EVENTS.QUIT_ROOM, ({ roomId } = {}) => {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     const player = room?.players.find((candidate) => candidate.id === socket.data.playerId);
-    if (!room || !player) return;
+    const spectator = room?.spectators.find((candidate) => candidate.id === socket.data.playerId);
+    if (!room || (!player && !spectator)) return;
     socket.emit(EVENTS.ROOM_LEFT);
-    removePlayerFromRoom(io, room, player.id, { reason: `${player.name} left the room.` });
+    if (spectator) removeSpectatorFromRoom(io, room, spectator.id);
+    else removePlayerFromRoom(io, room, player.id, { reason: `${player.name} left the room.` });
   });
 
   socket.on(EVENTS.CREATE_ROOM, ({ playerName, settings } = {}) => {
@@ -126,25 +128,32 @@ function registerRoomHandlers(io, socket) {
     emitRoomState(io, room);
   });
 
-  socket.on(EVENTS.JOIN_ROOM, ({ roomId, playerName } = {}) => {
+  socket.on(EVENTS.JOIN_ROOM, ({ roomId, playerName, role = "player" } = {}) => {
     const name = sanitizeName(playerName);
     const id = sanitizeText(roomId).toUpperCase();
     const room = id ? rooms[id] : getOrCreatePublicRoom();
 
     if (!name) return socket.emit(EVENTS.ERROR, { message: "Enter a name first." });
     if (!room) return socket.emit(EVENTS.ERROR, { message: "That room does not exist." });
+    if (role === "spectator" && !room.isPrivate) {
+      return socket.emit(EVENTS.ERROR, { message: "Spectator mode is only available in custom rooms." });
+    }
+    if (role === "spectator" && room.spectators.length >= 20) {
+      return socket.emit(EVENTS.ERROR, { message: "This room has reached its spectator limit." });
+    }
     if (room.players.length >= room.settings.maxPlayers) {
-      return socket.emit(EVENTS.ERROR, { message: "That room is full." });
+      if (role !== "spectator") return socket.emit(EVENTS.ERROR, { message: "That room is full." });
     }
 
-    const player = new Player(socket.data.playerId || randomUUID(), name, socket.id);
+    const player = new Player(socket.data.playerId || randomUUID(), name, socket.id, { isSpectator: role === "spectator" });
     socket.data.playerId = player.id;
-    room.addPlayer(player);
+    if (player.isSpectator) room.addSpectator(player);
+    else room.addPlayer(player);
     socket.join(room.id);
     socket.emit(EVENTS.ROOM_JOINED, { roomId: room.id, player: publicPlayer(player), hostId: room.hostId });
     addMessage(io, room, {
       type: "system",
-      text: room.isPrivate ? `${name} joined the room.` : `${name} joined the public match.`,
+      text: player.isSpectator ? `${name} started watching the room.` : room.isPrivate ? `${name} joined the room.` : `${name} joined the public match.`,
     });
 
     if (!room.isPrivate && room.players.length >= MIN_PLAYERS_TO_START && !room.game) {
@@ -181,7 +190,12 @@ function sendRejoinAvailability(socket) {
 function markPlayerDisconnected(io, socket) {
   for (const room of Object.values(rooms)) {
     const player = getPlayerForSocket(room, socket.id);
-    if (!player) continue;
+    const spectator = room.spectators.find((candidate) => candidate.socketId === socket.id);
+    if (!player && !spectator) continue;
+    if (spectator) {
+      removeSpectatorFromRoom(io, room, spectator.id);
+      continue;
+    }
     player.isConnected = false;
     player.socketId = null;
     player.disconnectTimer = setTimeout(() => {
@@ -194,6 +208,21 @@ function markPlayerDisconnected(io, socket) {
     }, DISCONNECT_GRACE_MS);
     emitRoomState(io, room);
   }
+}
+
+function removeSpectatorFromRoom(io, room, spectatorId) {
+  const spectator = room.removeSpectator(spectatorId);
+  if (!spectator) return false;
+  const spectatorSocket = spectator.socketId ? io.sockets.sockets.get(spectator.socketId) : null;
+  spectatorSocket?.leave(room.id);
+  addMessage(io, room, { type: "system", text: `${spectator.name} stopped watching the room.` });
+  if (room.isEmpty()) {
+    clearTimers(room.game);
+    delete rooms[room.id];
+  } else {
+    emitRoomState(io, room);
+  }
+  return true;
 }
 
 function removePlayerFromRoom(io, room, playerId, options = {}) {

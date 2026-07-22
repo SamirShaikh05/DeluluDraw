@@ -1,7 +1,7 @@
 const AVATAR_COLORS = ["#e94747", "#f59e0b", "#ffe047", "#55d63b", "#38dbe8", "#516dff", "#a338e8", "#ff70bd"];
 
 class Player {
-  constructor(id, name, socketId) {
+  constructor(id, name, socketId, options = {}) {
     this.id = id;
     this.name = name;
     this.socketId = socketId;
@@ -9,6 +9,7 @@ class Player {
     this.hasGuessed = false;
     this.isConnected = true;
     this.avatarColor = pickAvatarColor(id);
+    this.isSpectator = options.isSpectator === true;
   }
 }
 

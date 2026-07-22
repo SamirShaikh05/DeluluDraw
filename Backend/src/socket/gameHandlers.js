@@ -70,6 +70,7 @@ function beginChoosing(io, room) {
   if (!game || room.players.length < MIN_PLAYERS_TO_START) return;
 
   clearTimers(game);
+  room.canvas = [];
   room.players.forEach((player) => {
     player.hasGuessed = false;
   });

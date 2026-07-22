@@ -12,8 +12,9 @@ function registerDrawHandlers(io, socket) {
     const room = rooms[sanitizeText(roomId).toUpperCase()];
     if (!room) return;
 
-  const drawer = getDrawer(room);
-  if (drawer?.socketId !== socket.id || room.game?.phase !== "drawing") return;
+    const drawer = getDrawer(room);
+    if (drawer?.socketId !== socket.id || room.game?.phase !== "drawing") return;
+    room.canvas = [];
     io.to(room.id).emit(EVENTS.CANVAS_CLEAR);
   });
 }
@@ -32,6 +33,7 @@ function relayDraw(socket, type, payload) {
     color: typeof payload.color === "string" ? payload.color.slice(0, 24) : "#111827",
     size: clamp(Number(payload.size) || 5, 1, 40),
   };
+  room.canvas.push(data);
   socket.to(room.id).emit(EVENTS.DRAW_DATA, data);
 }
 

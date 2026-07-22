@@ -27,12 +27,16 @@ function publicGame(room, forSocketId) {
 }
 
 function roomSnapshot(room, forSocketId) {
+  const viewer = [...room.players, ...room.spectators].find((member) => member.socketId === forSocketId);
   return {
     roomId: room.id,
     hostId: room.hostId,
     isPrivate: room.isPrivate,
     settings: room.settings,
     players: room.players.map(publicPlayer),
+    spectators: room.spectators.map(publicPlayer),
+    isSpectator: viewer?.isSpectator === true,
+    canvas: room.canvas || [],
     kickVotes: publicKickVotes(room, forSocketId),
     messages: room.chat.slice(-80),
     game: publicGame(room, forSocketId),

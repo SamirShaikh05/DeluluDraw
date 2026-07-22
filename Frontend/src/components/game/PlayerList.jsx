@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MiniAvatar } from "../ui/MiniAvatar";
 
-export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote, players, showKickVotes = false }) {
+export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote, players, spectators = [], showKickVotes = false }) {
   const [hoveredId, setHoveredId] = useState(null);
 
   return (
@@ -76,6 +76,10 @@ export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote,
           );
         })}
       </div>
+      {spectators.length > 0 && <>
+        <div className="bg-[#e8f2ff] p-2 text-center text-[#0c3579]"><h3 className="text-sm font-bold uppercase tracking-wide">Watching ({spectators.length})</h3></div>
+        {spectators.map((spectator, index) => <div key={spectator.id} className={`flex min-h-11 items-center gap-2 border-t border-gray-200 px-2 py-1.5 ${index % 2 === 0 ? "bg-white" : "bg-[#f8f9fa]"}`}><span>👀</span><span className="truncate text-xs font-bold text-[#153e91]">{spectator.name}</span></div>)}
+      </>}
     </aside>
   );
 }
