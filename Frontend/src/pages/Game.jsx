@@ -41,7 +41,7 @@ export function Game({
   };
 
   return (
-    <section className="mx-auto mb-7 mt-3 w-[min(100%-24px,1170px)]">
+    <section className="game-page mx-auto mb-7 mt-3 w-[min(100%-24px,1170px)]">
       {/* Top Header Row */}
       <div className="grid gap-3 rounded-t-[7px] border-[3px] border-[#0c3579] bg-white p-2.5 md:grid-cols-[1fr_auto_1fr] md:items-center">
         <div className="flex items-center justify-start">
@@ -114,7 +114,7 @@ export function Game({
       )}
 
       {/* FIXED: changed items-start to items-stretch */}
-      <div className="grid grid-cols-1 items-stretch gap-0 md:grid-cols-[220px_minmax(0,1fr)_266px]">
+      <div className="game-layout">
         <PlayerList
           players={players}
           hostId={room.hostId}
@@ -125,7 +125,7 @@ export function Game({
           showKickVotes={showKickVotes}
           spectators={spectators}
         />
-        <div className="relative flex flex-col justify-between min-w-0 border-b-[3px] border-[#0c3579] bg-white">
+        <div className="game-stage relative flex min-h-0 min-w-0 flex-col justify-between border-b-[3px] border-[#0c3579] bg-white">
           <WordPicker chooseWord={chooseWord} game={game} isDrawer={isDrawer} players={players} wordOptions={wordOptions} />
           <CanvasBoard socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && game?.phase === "drawing"} color={color} size={size} initialStrokes={room.canvas || []} />
           <Toolbar color={color} setColor={setColor} size={size} setSize={setSize} socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && !isSpectator} />

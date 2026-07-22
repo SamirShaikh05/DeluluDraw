@@ -18,13 +18,13 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
   };
 
   return (
-    <section className="relative z-10 mx-auto my-14.5 grid w-[min(100%-20px,620px)] grid-cols-1 gap-6 md:w-[min(100%-28px,920px)] md:grid-cols-[minmax(0,1fr)_320px] md:gap-8">
-      <div className="rounded-xl border-4 border-[rgba(255,255,255,0.2)] bg-linear-to-br from-[rgba(9,50,122,0.8)] to-[rgba(15,70,163,0.8)] p-8 text-white shadow-2xl md:p-12">
+    <section className="lobby-page relative z-10 mx-auto my-14.5 grid w-[min(100%-20px,620px)] grid-cols-1 gap-6 md:w-[min(100%-28px,920px)] md:grid-cols-[minmax(0,1fr)_320px] md:gap-8">
+      <div className="lobby-card rounded-xl border-4 border-[rgba(255,255,255,0.2)] bg-linear-to-br from-[rgba(9,50,122,0.8)] to-[rgba(15,70,163,0.8)] p-8 text-white shadow-2xl md:p-12">
         <p className="m-0 font-black uppercase text-[#f2e84b] text-lg tracking-wide">{isPrivate ? "Private Room" : "Public Match"}</p>
         {isPrivate ? (
-          <div className="mt-4 flex items-center gap-4">
+          <div className="mt-4 flex flex-wrap items-center gap-4">
             <h1 className="text-4xl font-black leading-none md:text-5xl">Room Code:</h1>
-            <div className="flex items-center gap-3 rounded-lg bg-white/10 px-4 py-2">
+            <div className="flex min-w-0 max-w-full items-center gap-3 rounded-lg bg-white/10 px-4 py-2">
               <span className="text-3xl font-black text-white md:text-4xl">{room.roomId}</span>
               <button
                 onClick={copyRoomCode}
@@ -96,16 +96,18 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
         )}
         {notice && <p className="mt-6 text-center font-extrabold text-[#fff5f5] text-lg bg-red-500/20 rounded-lg p-3">{notice}</p>}
       </div>
-      <PlayerList
-        players={players}
-        hostId={room.hostId}
-        drawerId=""
-        myId={myId}
-        kickVotes={room.kickVotes}
-        onKickVote={onKickVote}
-        showKickVotes={showKickVotes}
-        spectators={room.spectators || []}
-      />
+      <div className="lobby-player-panel min-h-0">
+        <PlayerList
+          players={players}
+          hostId={room.hostId}
+          drawerId=""
+          myId={myId}
+          kickVotes={room.kickVotes}
+          onKickVote={onKickVote}
+          showKickVotes={showKickVotes}
+          spectators={room.spectators || []}
+        />
+      </div>
     </section>
   );
 }

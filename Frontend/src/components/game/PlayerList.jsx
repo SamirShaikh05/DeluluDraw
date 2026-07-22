@@ -5,7 +5,7 @@ export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote,
   const [hoveredId, setHoveredId] = useState(null);
 
   return (
-    <aside className="h-full border-[3px] border-[#0c3579] bg-white md:border-t-0 max-md:grid max-md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+    <aside className="player-list h-full min-h-0 border-[3px] border-[#0c3579] bg-white md:border-t-0 max-md:grid max-md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
       <div className="bg-[#0c3579] p-2 text-center text-white">
         <h3 className="text-sm font-bold uppercase tracking-wide">Players</h3>
       </div>

@@ -5,10 +5,29 @@ import { MessageItem } from "./MessageItem";
 export function ChatBox({ messages, sendGuess, disabled, drawer }) {
   const [text, setText] = useState("");
   const scrollRef = useRef(null);
+  const previousMessageCountRef = useRef(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages]);
+    const currentMessageCount = messages.length;
+
+    if (previousMessageCountRef.current === null) {
+      previousMessageCountRef.current = currentMessageCount;
+      if (currentMessageCount > 0) {
+        requestAnimationFrame(() => {
+          scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+        });
+      }
+      return;
+    }
+
+    if (currentMessageCount > previousMessageCountRef.current) {
+      requestAnimationFrame(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+      });
+    }
+
+    previousMessageCountRef.current = currentMessageCount;
+  }, [messages.length, messages[messages.length - 1]?.id]);
 
   function submit(event) {
     event.preventDefault();
@@ -18,9 +37,9 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
   }
 
   return (
-    <aside className="flex h-full min-w-0 flex-col border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:border-t-0">
+    <aside className="chat-box flex h-full min-h-0 min-w-0 flex-col overflow-hidden border-x-[3px] border-b-[3px] border-[#0c3579] bg-white md:border-t-0">
       {/* Messages Stream */}
-      <div className="chat-stream flex-1 overflow-y-auto bg-[#f8fafc]" ref={scrollRef}>
+      <div className="chat-stream flex-1 min-h-0 overflow-y-auto bg-[#f8fafc]" ref={scrollRef}>
         {messages.map((message) => (
           <MessageItem message={message} key={message.id} />
         ))}

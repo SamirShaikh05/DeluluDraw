@@ -11,6 +11,41 @@
 body {
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.game-layout {
+  --game-canvas-height: clamp(360px, 62vh, 560px);
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 266px;
+  grid-template-areas: "players stage chat";
+  align-items: stretch;
+  min-width: 0;
+}
+
+.game-layout > .player-list {
+  grid-area: players;
+  min-height: calc(var(--game-canvas-height) + 4.25rem);
+  overflow-y: auto;
+}
+
+.game-stage {
+  grid-area: stage;
+  height: calc(var(--game-canvas-height) + 4.25rem);
+}
+
+.game-layout > .chat-box {
+  grid-area: chat;
+  min-height: calc(var(--game-canvas-height) + 4.25rem);
+}
+
+.lobby-player-panel {
+  min-height: 0;
+}
+
+.lobby-player-panel > .player-list {
+  max-height: 620px;
+  overflow-y: auto;
 }
 
 button,
@@ -154,5 +189,91 @@ button {
   .draw-canvas {
     height: 54vh;
     min-height: 330px;
+  }
+}
+
+@media (max-width: 767px) {
+  .game-page {
+    width: calc(100% - 16px);
+    margin-top: 0.5rem;
+  }
+
+  .game-layout {
+    --game-canvas-height: clamp(260px, 40vh, 420px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "stage stage"
+      "players chat";
+    gap: 0;
+  }
+
+  .game-layout > .player-list,
+  .game-layout > .chat-box {
+    min-height: clamp(240px, 40vh, 420px);
+    height: clamp(240px, 40vh, 420px);
+  }
+
+  .game-layout > .player-list {
+    border-right-width: 2px;
+  }
+
+  .game-layout > .chat-box {
+    border-left-width: 2px;
+  }
+
+  .game-stage {
+    height: calc(var(--game-canvas-height) + 4.25rem);
+  }
+
+  .draw-canvas {
+    height: var(--game-canvas-height);
+    min-height: 0;
+  }
+
+  .lobby-page {
+    width: calc(100% - 16px);
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    gap: 1rem;
+  }
+
+  .lobby-card {
+    padding: 1.25rem;
+  }
+
+  .lobby-player-panel > .player-list {
+    max-height: min(55vh, 440px);
+  }
+}
+
+@media (max-width: 520px) {
+  .game-page {
+    width: calc(100% - 10px);
+  }
+
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "stage"
+      "players"
+      "chat";
+  }
+
+  .game-layout > .player-list,
+  .game-layout > .chat-box {
+    height: clamp(220px, 34vh, 340px);
+    min-height: clamp(220px, 34vh, 340px);
+  }
+
+  .game-layout > .player-list {
+    border-right-width: 3px;
+  }
+
+  .game-layout > .chat-box {
+    border-left-width: 3px;
+  }
+
+  .lobby-card h1 {
+    font-size: clamp(2.25rem, 12vw, 4.5rem);
   }
 }
