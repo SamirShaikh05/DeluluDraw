@@ -9,7 +9,7 @@ import { Lobby } from "./pages/Lobby";
 import { DEFAULT_SETTINGS } from "./utils/constants";
 
 function App() {
-  const { connected, myId, socketRef } = useSocket();
+  const { connected, myId, ping, socketRef } = useSocket();
   const {
     messages,
     notice,
@@ -106,6 +106,7 @@ function App() {
           room={room}
           game={game}
           players={sortedPlayers}
+          ping={ping}
           me={me}
           myId={myId}
           onKickVote={voteKick}

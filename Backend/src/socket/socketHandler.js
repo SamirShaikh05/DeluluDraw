@@ -6,6 +6,9 @@ const { registerRoomHandlers } = require("./roomHandlers");
 
 function registerSocketHandlers(io) {
   io.on(EVENTS.CONNECTION, (socket) => {
+    socket.on(EVENTS.PING, ({ timestamp } = {}) => {
+      socket.emit(EVENTS.PONG, { timestamp });
+    });
     registerRoomHandlers(io, socket);
     registerGameHandlers(io, socket);
     registerChatHandlers(io, socket);

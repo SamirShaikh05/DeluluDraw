@@ -2,6 +2,8 @@ const EVENTS = {
   CONNECTION: "connection",
   DISCONNECT: "disconnect",
   ERROR: "error",
+  PING: "PING",
+  PONG: "PONG",
 
   CREATE_ROOM: "create_room",
   JOIN_ROOM: "join_room",
