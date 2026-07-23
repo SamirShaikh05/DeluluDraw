@@ -286,7 +286,11 @@ function removePlayerFromRoom(io, room, playerId, options = {}) {
     room.kickVotes = {};
   }
 
-  if (!room.isPrivate && room.players.length < MIN_PLAYERS_TO_START) {
+  // A custom match also needs to leave the game when a player leaves. Keeping
+  // the old game object here leaves the remaining player stuck on the game
+  // screen with a private `game_over` state instead of returning to the room
+  // lobby where another player can join.
+  if (room.players.length < MIN_PLAYERS_TO_START) {
     resetRoomToWaiting(io, room, "Not enough players. Waiting for more players.");
     return true;
   }
