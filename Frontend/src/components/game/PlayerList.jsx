@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { MiniAvatar } from "../ui/MiniAvatar";
 
-export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote, players, spectators = [], showKickVotes = false }) {
+export const PlayerList = memo(function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote, players, spectators = [], showKickVotes = false }) {
   const [hoveredId, setHoveredId] = useState(null);
 
   return (
@@ -82,4 +82,4 @@ export function PlayerList({ drawerId, hostId, kickVotes = {}, myId, onKickVote,
       </>}
     </aside>
   );
-}
+});

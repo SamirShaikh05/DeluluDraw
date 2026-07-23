@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import { MessageItem } from "./MessageItem";
 
-export function ChatBox({ messages, sendGuess, disabled, drawer }) {
+export const ChatBox = memo(function ChatBox({ messages, sendGuess, disabled, drawer }) {
   const [text, setText] = useState("");
   const scrollRef = useRef(null);
   const previousMessageCountRef = useRef(null);
@@ -71,4 +71,4 @@ export function ChatBox({ messages, sendGuess, disabled, drawer }) {
       </form>
     </aside>
   );
-}
+});

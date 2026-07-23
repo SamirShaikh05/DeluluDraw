@@ -61,6 +61,10 @@ export function useGameState(socketRef) {
         setScreen("lobby");
       }
     };
+    const onGameState = ({ game } = {}) => {
+      if (!game) return;
+      setRoom((current) => (current ? { ...current, game } : current));
+    };
     const onMessage = (message) => {
       setMessages((current) => [...current.slice(-90), message]);
     };
@@ -92,6 +96,7 @@ export function useGameState(socketRef) {
     socket.on("room_rejoined", onRoomRejoined);
     socket.on("room_left", onRoomLeft);
     socket.on("room_state", onRoomState);
+    socket.on("game_state", onGameState);
     socket.on("message", onMessage);
     socket.on("choose_word", onChooseWord);
     socket.on("round_start", clearWordOptions);
@@ -107,6 +112,7 @@ export function useGameState(socketRef) {
       socket.off("room_rejoined", onRoomRejoined);
       socket.off("room_left", onRoomLeft);
       socket.off("room_state", onRoomState);
+      socket.off("game_state", onGameState);
       socket.off("message", onMessage);
       socket.off("choose_word", onChooseWord);
       socket.off("round_start", clearWordOptions);

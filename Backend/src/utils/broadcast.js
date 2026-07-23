@@ -1,5 +1,5 @@
 const EVENTS = require("../constants/events");
-const { publicPlayer, roomSnapshot } = require("./serializers");
+const { publicGame, publicPlayer, roomSnapshot } = require("./serializers");
 
 function emitRoomState(io, room) {
   for (const member of [...room.players, ...room.spectators]) {
@@ -14,6 +14,19 @@ function emitRoomState(io, room) {
   });
 }
 
+// Countdown and hint changes are frequent. Keep them separate from the
+// relatively large room snapshot (chat and canvas history).
+function emitGameState(io, room) {
+  for (const member of [...room.players, ...room.spectators]) {
+    if (member.socketId) {
+      io.to(member.socketId).emit(EVENTS.GAME_STATE, {
+        game: publicGame(room, member.socketId),
+      });
+    }
+  }
+}
+
 module.exports = {
+  emitGameState,
   emitRoomState,
 };

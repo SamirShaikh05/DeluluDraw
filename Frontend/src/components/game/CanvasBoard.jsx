@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { useCanvas } from "../../hooks/useCanvas";
 
-export function CanvasBoard({ socketRef, roomId, enabled, color, size, initialStrokes }) {
+export const CanvasBoard = memo(function CanvasBoard({ socketRef, roomId, enabled, color, size, initialStrokes }) {
   const { canvasRef, end, move, start } = useCanvas({ color, enabled, roomId, size, socketRef, initialStrokes });
 
   return (
@@ -16,4 +17,4 @@ export function CanvasBoard({ socketRef, roomId, enabled, color, size, initialSt
       onTouchEnd={end}
     />
   );
-}
+});

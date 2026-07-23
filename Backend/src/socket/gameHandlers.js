@@ -6,10 +6,10 @@ const {
 } = require("../constants/config");
 const Game = require("../core/Game");
 const rooms = require("../store/rooms");
-const { emitRoomState } = require("../utils/broadcast");
+const { emitGameState, emitRoomState } = require("../utils/broadcast");
 const { addMessage } = require("../utils/messages");
 const { getDrawer } = require("../utils/roomState");
-const { publicGame, publicPlayer } = require("../utils/serializers");
+const { publicPlayer } = require("../utils/serializers");
 const { drawerPoints, guessPoints } = require("../utils/scoreCalculator");
 const { clearTimers } = require("../utils/timers");
 const { normalizeWord, sanitizeText } = require("../utils/validators");
@@ -92,7 +92,7 @@ function beginChoosing(io, room) {
 
   game.tickRef = setInterval(() => {
     if (game.phase !== "choosing") return;
-    emitRoomState(io, room);
+    emitGameState(io, room);
   }, 1000);
 
   game.timerRef = setTimeout(() => {
@@ -124,7 +124,7 @@ function chooseWord(io, room, socketId, word) {
 
   game.tickRef = setInterval(() => {
     revealHintIfNeeded(io, room);
-    emitRoomState(io, room);
+    emitGameState(io, room);
   }, 1000);
 
   game.timerRef = setTimeout(() => endRound(io, room.id), room.settings.drawTime * 1000);
@@ -150,7 +150,6 @@ function revealHintIfNeeded(io, room) {
 
     const next = hidden[Math.floor(Math.random() * hidden.length)].index;
     game.revealedIndexes.push(next);
-    io.to(room.id).emit(EVENTS.GAME_STATE, { game: publicGame(room) });
   }
 }
 

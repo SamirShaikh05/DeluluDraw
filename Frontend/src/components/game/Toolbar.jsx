@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { PALETTE } from "../../utils/constants";
 
-export function Toolbar({ color, setColor, size, setSize, socketRef, roomId, enabled }) {
+export const Toolbar = memo(function Toolbar({ color, setColor, size, setSize, socketRef, roomId, enabled }) {
   return (
     <div className="grid grid-cols-1 items-center gap-2.5 border-t-2 border-[#d9e4f5] bg-[#eef4ff] p-2.5 sm:grid-cols-[minmax(0,1fr)_170px_82px]">
       <div className="flex flex-wrap gap-1.25">
@@ -29,4 +30,4 @@ export function Toolbar({ color, setColor, size, setSize, socketRef, roomId, ena
       </button>
     </div>
   );
-}
+});

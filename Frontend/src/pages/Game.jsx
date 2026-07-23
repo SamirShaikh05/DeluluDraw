@@ -129,7 +129,17 @@ export function Game({
         <div className="game-stage relative flex min-h-0 min-w-0 flex-col justify-between border-b-[3px] border-[#0c3579] bg-white">
           <WordPicker chooseWord={chooseWord} game={game} isDrawer={isDrawer} players={players} wordOptions={wordOptions} />
           <CanvasBoard socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && game?.phase === "drawing"} color={color} size={size} initialStrokes={room.canvas || []} />
-          <Toolbar color={color} setColor={setColor} size={size} setSize={setSize} socketRef={socketRef} roomId={room.roomId} enabled={isDrawer && !isSpectator} />
+          {isDrawer && !isSpectator && (
+            <Toolbar
+              color={color}
+              setColor={setColor}
+              size={size}
+              setSize={setSize}
+              socketRef={socketRef}
+              roomId={room.roomId}
+              enabled
+            />
+          )}
         </div>
         <ChatBox messages={messages} sendGuess={sendGuess} disabled={isSpectator || isDrawer || game?.phase !== "drawing" || me?.hasGuessed} drawer={drawer} />
       </div>

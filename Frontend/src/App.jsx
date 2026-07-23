@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { DoodleLayer } from "./components/layout/DoodleLayer";
 import { Navbar } from "./components/layout/Navbar";
 import { useGameState } from "./hooks/useGameState";
@@ -38,18 +38,16 @@ function App() {
   const isHost = room?.hostId === myId;
   const isDrawer = game?.drawerId === myId;
 
-  useEffect(() => {
-    if (game?.phase === "choosing") setSelectedWord("");
-  }, [game?.phase, game?.round]);
+  const visibleSelectedWord = game?.phase === "choosing" ? "" : selectedWord;
 
-  function createRoom() {
+  const createRoom = useCallback(() => {
     socketRef.current?.emit("create_room", {
       playerName,
       settings,
     });
-  }
+  }, [playerName, settings, socketRef]);
 
-  function joinRoom() {
+  const joinRoom = useCallback(() => {
     if (roomCode.trim()) {
       setJoinChoiceOpen(true);
       return;
@@ -58,45 +56,45 @@ function App() {
       playerName,
       roomId: roomCode.trim(),
     });
-  }
+  }, [playerName, roomCode, socketRef]);
 
-  function joinAs(role) {
+  const joinAs = useCallback((role) => {
     setJoinChoiceOpen(false);
     socketRef.current?.emit("join_room", {
       playerName,
       roomId: roomCode.trim(),
       role,
     });
-  }
+  }, [playerName, roomCode, socketRef]);
 
-  function startGame() {
+  const startGame = useCallback(() => {
     socketRef.current?.emit("start_game", { roomId: room?.roomId });
-  }
+  }, [room?.roomId, socketRef]);
 
-  function updateRoomSettings(nextSettings) {
+  const updateRoomSettings = useCallback((nextSettings) => {
     socketRef.current?.emit("update_room_settings", {
       roomId: room?.roomId,
       settings: nextSettings,
     });
-  }
+  }, [room?.roomId, socketRef]);
 
-  function chooseWord(word) {
+  const chooseWord = useCallback((word) => {
     setSelectedWord(word);
     socketRef.current?.emit("word_chosen", { roomId: room?.roomId, word });
     setWordOptions([]);
-  }
+  }, [room?.roomId, setWordOptions, socketRef]);
 
-  function voteKick(targetId) {
+  const voteKick = useCallback((targetId) => {
     socketRef.current?.emit("vote_kick", { roomId: room?.roomId, targetId });
-  }
+  }, [room?.roomId, socketRef]);
 
-  function sendGuess(text) {
+  const sendGuess = useCallback((text) => {
     socketRef.current?.emit("guess", { roomId: room?.roomId, text });
-  }
+  }, [room?.roomId, socketRef]);
 
-  function quitRoom() {
+  const quitRoom = useCallback(() => {
     socketRef.current?.emit("quit_room", { roomId: room?.roomId });
-  }
+  }, [room?.roomId, socketRef]);
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#2366bd] bg-[linear-gradient(180deg,rgba(36,103,195,0.94),rgba(22,80,170,0.92))]">
@@ -136,7 +134,7 @@ function App() {
         <Game
           room={room}
           game={game}
-          selectedWord={selectedWord}
+          selectedWord={visibleSelectedWord}
           players={sortedPlayers}
           spectators={room.spectators || []}
           ping={ping}
