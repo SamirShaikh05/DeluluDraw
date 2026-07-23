@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoodleLayer } from "./components/layout/DoodleLayer";
 import { Navbar } from "./components/layout/Navbar";
 import { useGameState } from "./hooks/useGameState";
@@ -28,6 +28,7 @@ function App() {
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [joinChoiceOpen, setJoinChoiceOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState("");
   const [settings] = useState(DEFAULT_SETTINGS);
   const myId = playerId;
 
@@ -36,6 +37,10 @@ function App() {
   const drawer = players.find((player) => player.id === game?.drawerId);
   const isHost = room?.hostId === myId;
   const isDrawer = game?.drawerId === myId;
+
+  useEffect(() => {
+    if (game?.phase === "choosing") setSelectedWord("");
+  }, [game?.phase, game?.round]);
 
   function createRoom() {
     socketRef.current?.emit("create_room", {
@@ -76,6 +81,7 @@ function App() {
   }
 
   function chooseWord(word) {
+    setSelectedWord(word);
     socketRef.current?.emit("word_chosen", { roomId: room?.roomId, word });
     setWordOptions([]);
   }
@@ -119,10 +125,10 @@ function App() {
           isHost={isHost}
           myId={myId}
           onKickVote={voteKick}
+          onQuitRoom={quitRoom}
           startGame={startGame}
           updateRoomSettings={updateRoomSettings}
           notice={notice}
-          goHome={() => setScreen("home")}
         />
       )}
 
@@ -130,6 +136,7 @@ function App() {
         <Game
           room={room}
           game={game}
+          selectedWord={selectedWord}
           players={sortedPlayers}
           spectators={room.spectators || []}
           ping={ping}

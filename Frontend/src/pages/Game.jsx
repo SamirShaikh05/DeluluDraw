@@ -21,6 +21,7 @@ export function Game({
   players,
   ping,
   room,
+  selectedWord,
   sendGuess,
   socketRef,
   wordOptions,
@@ -51,7 +52,7 @@ export function Game({
         </div>
 
         <div className="min-w-0 flex justify-center">
-          <WordDisplay game={game} isDrawer={isDrawer} totalRounds={room.settings.rounds} />
+          <WordDisplay game={game} isDrawer={isDrawer} selectedWord={selectedWord} totalRounds={room.settings.rounds} />
         </div>
 
         <div className="flex items-center justify-end gap-2">

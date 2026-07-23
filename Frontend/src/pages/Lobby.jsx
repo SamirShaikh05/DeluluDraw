@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PlayerList } from "../components/game/PlayerList";
 
-export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room, startGame, updateRoomSettings }) {
+export function Lobby({ isHost, myId, notice, onKickVote, onQuitRoom, players, room, startGame, updateRoomSettings }) {
   const [copied, setCopied] = useState(false);
   const isPrivate = room.isPrivate;
   const waitingForPlayers = !isPrivate && players.length < 2;
@@ -75,10 +75,10 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
               </button>
               <button
                 className="min-h-14 w-full rounded-lg bg-[#2f97e8] text-xl font-extrabold text-white shadow-lg transition-all hover:bg-[#3b82f6] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#2f97e8]"
-                onClick={goHome}
+                onClick={onQuitRoom}
                 type="button"
               >
-                Home
+                Leave Room
               </button>
             </div>
           </>
@@ -87,10 +87,10 @@ export function Lobby({ goHome, isHost, myId, notice, onKickVote, players, room,
           <div className="mt-8 grid grid-cols-1 gap-4 sm:max-w-48">
             <button
               className="min-h-14 w-full rounded-lg bg-[#2f97e8] text-xl font-extrabold text-white shadow-lg transition-all hover:bg-[#3b82f6] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#2f97e8]"
-              onClick={goHome}
+              onClick={onQuitRoom}
               type="button"
             >
-              Home
+              Leave Room
             </button>
           </div>
         )}
