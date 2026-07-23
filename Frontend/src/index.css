@@ -25,25 +25,29 @@ body {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr) 266px;
   grid-template-areas: "players stage chat";
+  grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
+  height: calc(var(--game-canvas-height) + 4.25rem);
   min-width: 0;
 }
 
 .game-layout > .player-list {
   grid-area: players;
-  min-height: calc(var(--game-canvas-height) + 4.25rem);
+  height: 100%;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 .game-stage {
   grid-area: stage;
-  height: calc(var(--game-canvas-height) + 4.25rem);
+  height: 100%;
 }
 
 .game-layout > .chat-box {
   grid-area: chat;
-  min-height: calc(var(--game-canvas-height) + 4.25rem);
+  height: 100%;
+  min-height: 0;
   overscroll-behavior: contain;
 }
 
@@ -197,6 +201,7 @@ button {
 @media (max-width: 900px) {
   .game-layout {
     --game-canvas-height: clamp(300px, 54vh, 480px);
+    height: calc(var(--game-canvas-height) + 4.25rem);
   }
 
   .draw-canvas {
@@ -218,6 +223,8 @@ button {
       "stage stage"
       "players chat";
     gap: 0;
+    height: auto;
+    grid-template-rows: none;
   }
 
   .game-layout > .player-list,
@@ -288,6 +295,8 @@ button {
       "stage"
       "players"
       "chat";
+    height: auto;
+    grid-template-rows: none;
   }
 
   .game-layout > .player-list,
